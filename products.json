@@ -1,0 +1,26 @@
+[
+    {
+      "id": "1",
+      "name": "Paddleboard 1",
+      "description": "Green",
+      "image": "./paddle.png"
+    },
+    {
+      "id": "2",
+      "name": "Paddleboard 2",
+      "description": "Red",
+      "image": "./paddle.png"
+    },
+    {
+      "id": "3",
+      "name": "Paddleboard 3",
+      "description": "Black",
+      "image": "./paddle.png"
+    },
+    {
+      "id": "4",
+      "name": "Paddleboard 4",
+      "description": "Navy blue",
+      "image": "./paddle.png"
+    }
+  ]
