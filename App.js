@@ -20,7 +20,7 @@ const App = () => {
     latitude: 55.667369,
     longitude: 12.576421,
   };
-
+//test comment
   return (
     <NavigationContainer>
       <Stack.Navigator
