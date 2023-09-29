@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LocationDetailScreen from './Views/LocationDetailScreen';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator();//hey
 
 const App = () => {
   const copenhagenCoordinates = {
