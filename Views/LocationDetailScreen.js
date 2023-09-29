@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Camera } from 'expo-camera';
 import productsData from '../products.json';
 
@@ -8,6 +8,7 @@ const LocationDetail = () => {
   const [isCameraVisible, setCameraVisible] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
   const [scannedData, setScannedData] = useState(null);
+  const [rentalProductId, setRentalProductId] = useState(null);
 
   useEffect(() => {
     fetchProducts();
@@ -28,7 +29,7 @@ const LocationDetail = () => {
   };
 
   const askCameraPermission = async () => {
-    const { status } = await Camera.requestCameraPermissionsAsync();
+    const { status } = await Camera.requestPermissionsAsync();
     setHasPermission(status === 'granted');
   };
 
@@ -40,14 +41,20 @@ const LocationDetail = () => {
     const scannedData = event.data;
     console.log('Scanned Data:', scannedData);
 
-    // Optionally, perform additional actions with the scanned data here
-    // setScannedData(scannedData);
-    setCameraVisible(false); // Close the camera after scanning
-
-    // Open the scanned URL
-    if (scannedData.startsWith('http://') || scannedData.startsWith('https://')) {
-      Linking.openURL(scannedData);
+    // Check if the scanned data matches a product ID
+    const matchingProduct = products.find((product) => product.id.toString() === scannedData);
+    if (matchingProduct) {
+      setRentalProductId(matchingProduct.id);
     }
+
+    setScannedData(scannedData);
+    setCameraVisible(false); // Close the camera after scanning
+  };
+
+  const handleRentProduct = () => {
+    // Implement the logic for renting the product here
+    // You can show a modal, navigate to a rental screen, etc.
+    console.log(`Renting product with ID: ${rentalProductId}`);
   };
 
   if (hasPermission === null) {
@@ -68,7 +75,17 @@ const LocationDetail = () => {
         />
       )}
 
-      {!isCameraVisible && (
+      {!isCameraVisible && rentalProductId ? (
+        <View style={styles.rentalContainer}>
+          <Text style={styles.title}>Rent Product</Text>
+          <Text style={styles.scannedDataText}>Product ID: {rentalProductId}</Text>
+          <TouchableOpacity onPress={handleRentProduct} style={styles.rentButton}>
+            <Text style={styles.rentButtonText}>Rent Product</Text>
+          </TouchableOpacity>
+        </View>
+      ) : null /* Do not render the product list when in camera mode */}
+
+      {!isCameraVisible && !rentalProductId && (
         <>
           <Text style={styles.title}>Produktliste</Text>
           <FlatList
@@ -90,7 +107,7 @@ const LocationDetail = () => {
         </>
       )}
 
-      {scannedData && (
+      {scannedData && !rentalProductId && (
         <View style={styles.scannedDataContainer}>
           <Text style={styles.scannedDataText}>Scanned Data: {scannedData}</Text>
         </View>
@@ -136,6 +153,19 @@ const styles = StyleSheet.create({
   scannedDataText: {
     fontSize: 16,
   },
+  rentalContainer: {
+    alignItems: 'center',
+  },
+  rentButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: '#4CAF50',
+    borderRadius: 5,
+  },
+  rentButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
 
-export default LocationDetail;
+export default LocationDetail
