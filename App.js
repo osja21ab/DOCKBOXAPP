@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import LocationDetailScreen from './Views/LocationDetailScreen';
+import LocationDetail from './Views/LocationDetailScreen.js'; // Import the LocationDetail component
+import { Feather } from '@expo/vector-icons';
 
-const Stack = createStackNavigator();//hey
+const Stack = createStackNavigator(); // Styling
 
 const App = () => {
   const copenhagenCoordinates = {
@@ -22,13 +23,31 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name="map"
-          options={({ navigation }) => ({
-            title: 'DockBox',
-          })}
-        >
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            height: 100, // Adjust the header height as needed
+            backgroundColor: '#095167',
+          },
+          headerTitleAlign: 'center',
+          headerTintColor: '#FCCE85',
+          headerTitleStyle: {
+            fontSize: 20, // Adjust the title text size as needed
+          },
+          headerTitle: 'Dock Box', // Set the header title
+          headerRight: () => (
+            <View style={styles.headerRight}>
+              <Feather name="user" size={30} color="#FCCE85" />
+            </View>
+          ),
+          headerLeft: () => (
+            <View style={styles.headerLeft}>
+              <Feather name="list" size={30} color="#FCCE85" />
+            </View>
+          ),
+        }}
+      >
+        <Stack.Screen name="map">
           {({ navigation }) => (
             <View style={styles.container}>
               <MapView
@@ -52,9 +71,8 @@ const App = () => {
           )}
         </Stack.Screen>
 
-        <Stack.Screen name="LocationDetail" component={LocationDetailScreen} />
-        {/* Remove the Terms Screen */}
-        {/* <Stack.Screen name="Terms" component={TermsAndConditionsScreen} /> */}
+        {/* Integrate the LocationDetail component */}
+        <Stack.Screen name="LocationDetail" component={LocationDetail} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -82,6 +100,16 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 2,
     borderColor: 'blue',
+  },
+  headerText: {
+    color: '#FCCE85',
+    fontSize: 20,
+  },
+  headerLeft: {
+    paddingLeft: 10,
+  },
+  headerRight: {
+    paddingRight: 10,
   },
 });
 
