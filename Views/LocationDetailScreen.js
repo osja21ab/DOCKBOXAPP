@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
 import productsData from '../products.json'; // Importér produktdatalisten fra JSON-filen
-
+//randomkommentar
 const LocationDetail = () => {
   const [products, setProducts] = useState([]);
 
