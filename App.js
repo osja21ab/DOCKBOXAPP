@@ -1,10 +1,12 @@
 import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native'; // Import Text from react-native
+import { StyleSheet, View, Image, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import LocationDetail from './Views/LocationDetailScreen.js';
 import { Feather } from '@expo/vector-icons';
+import Profile from './Views/profile.js'; 
+
 
 const Stack = createStackNavigator();
 
@@ -44,7 +46,12 @@ const App = () => {
             headerRight: () => (
               <View style={styles.headerRight}>
                 <Text>
-                  <Feather name="user" size={30} color="#FCCE85" />
+                  <Feather
+                    name="user"
+                    size={30}
+                    color="#FCCE85"
+                    onPress={() => navigation.navigate('Profile')}
+                  />
                 </Text>
               </View>
             ),
@@ -68,9 +75,10 @@ const App = () => {
           name="LocationDetail"
           component={LocationDetail}
           options={({ route }) => ({
-            headerTitle: route.params.title || 'Location Detail', // Set a default title if needed
+            headerTitle: route.params.title || 'Location Detail',
           })}
         />
+        <Stack.Screen name="Profile" component={Profile} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -87,7 +95,7 @@ const MapScreen = ({ route, navigation }) => {
           title="DockBox"
           onPress={() =>
             navigation.navigate('LocationDetail', {
-              title: 'DockBox', // You can pass any title you want
+              title: 'DockBox',
             })
           }
         >
