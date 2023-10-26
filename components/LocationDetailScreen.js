@@ -1,14 +1,37 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useLayoutEffect, useEffect, useState } from 'react';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { Camera } from 'expo-camera';
 import productsData from '../products.json';
+import { useNavigation } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons'; // Import Feather icons
 
-const LocationDetail = () => {
+const LocationDetailScreen = () => {
+  const navigation = useNavigation();
   const [products, setProducts] = useState([]);
   const [isCameraVisible, setCameraVisible] = useState(false);
   const [hasPermission, setHasPermission] = useState(null);
   const [scannedData, setScannedData] = useState(null);
   const [rentalProductId, setRentalProductId] = useState(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: 'Bryggen',
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Feather name="arrow-left" size={30} color="#FCCE85" style={styles.headerLeftIcon} />
+        </TouchableOpacity>
+      ),
+      headerRight: () => (
+        <TouchableOpacity onPress={callPhoneNumber} style={styles.phoneIconContainer}>
+          <Feather name="phone-call" size={25} color="#FCCE85" style={styles.headerRightIcon} />
+        </TouchableOpacity>
+      ),
+      headerStyle: {
+        backgroundColor: '#095167',
+      },
+      headerTintColor: '#FCCE85',
+    });
+  }, [navigation]);
 
   useEffect(() => {
     fetchProducts();
@@ -21,8 +44,8 @@ const LocationDetail = () => {
 
   const getImageSource = (imagePath) => {
     switch (imagePath) {
-      case './paddle.png':
-        return require('./paddle.png');
+      case 'paddle.png':
+        return require('../assets/paddle.png');
       default:
         return null;
     }
@@ -41,20 +64,21 @@ const LocationDetail = () => {
     const scannedData = event.data;
     console.log('Scanned Data:', scannedData);
 
-    // Check if the scanned data matches a product ID
     const matchingProduct = products.find((product) => product.id.toString() === scannedData);
     if (matchingProduct) {
       setRentalProductId(matchingProduct.id);
     }
 
     setScannedData(scannedData);
-    setCameraVisible(false); // Close the camera after scanning
+    setCameraVisible(false);
   };
 
   const handleRentProduct = () => {
-    // Implement the logic for renting the product here
-    // You can show a modal, navigate to a rental screen, etc.
     console.log(`Renting product with ID: ${rentalProductId}`);
+  };
+
+  const callPhoneNumber = () => {
+    Linking.openURL('tel:+4526716980');
   };
 
   if (hasPermission === null) {
@@ -66,7 +90,6 @@ const LocationDetail = () => {
 
   return (
     <View style={styles.container}>
-      {/* Camera Component */}
       {isCameraVisible && (
         <Camera
           style={styles.fullScreenCamera}
@@ -83,11 +106,11 @@ const LocationDetail = () => {
             <Text style={styles.rentButtonText}>Rent Product</Text>
           </TouchableOpacity>
         </View>
-      ) : null /* Do not render the product list when in camera mode */}
+      ) : null}
 
       {!isCameraVisible && !rentalProductId && (
         <>
-          <Text style={styles.title}>Produktliste</Text>
+          <Text style={styles.title}>Product List</Text>
           <FlatList
             data={products}
             keyExtractor={(item) => item.id.toString()}
@@ -166,6 +189,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
+  headerLeftIcon: {
+    marginLeft: 15,
+  },
+  headerRightIcon: {
+    paddingRight: 20, // Add padding to the right side of the phone call icon
+  },
 });
 
-export default LocationDetail
+export default LocationDetailScreen;
