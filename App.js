@@ -25,7 +25,7 @@ const App = () => {
         screenOptions={{ headerShown: false }} // Hide the header for Drawer navigator
       >
         <Drawer.Screen name="Main" component={MainNavigator} />
-        <Drawer.screen name="Signup" component={SignupScreen} />
+        <Drawer.Screen name="Signup" component={SignupScreen} />
         
       </Drawer.Navigator>
     </NavigationContainer>

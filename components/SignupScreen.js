@@ -1,6 +1,7 @@
-import React, { Component, useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import React, { Component } from 'react';
+import { View, TextInput, Button, Alert, StyleSheet, Text } from 'react-native';
 import fireBase from '../firebase/fireBase'; // Import your firebase.js
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 class SignupScreen extends Component {
   constructor(props) {
@@ -9,56 +10,70 @@ class SignupScreen extends Component {
       email: '',
       password: '',
       username: '',
+      errorMessage: null, // Added to store error messages
     };
   }
 
   handleSignUp = async () => {
     const { email, password, username } = this.state;
-    const database = fireBase.database();
-    const usersRef = database.ref('users');
 
-    // Check if the username already exists in the database
-    const snapshot = await usersRef.orderByChild('username').equalTo(username).once('value');
-    console.log(snapshot);
-
-    if (snapshot.exists()) {
-      Alert.alert('Username already exists', 'Please choose a different username.');
+    // Input validation (optional)
+    if (!email || !password || !username) {
+      this.setState({ errorMessage: 'All fields are required' });
       return;
     }
 
-    // If username is unique, create a new user entry in the database
-    const newUserRef = usersRef.push();
-    newUserRef.set({
-      email,
-      username,
-      password
-    });
+    if (password.length < 6) {
+      this.setState({ errorMessage: 'Password should be at least 6 characters long' });
+      return;
+    }
 
-    // You can also implement Firebase Authentication here to create a user account with email and password
+    try {
+      // Get the Firebase Auth instance
+      const auth = getAuth(fireBase);
 
-    // Clear input fields
-    this.setState({ email: '', password: '', username: '' });
+      // Create a new user with Firebase Authentication
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-    Alert.alert('Account created', 'You have successfully signed up!');
+      // If successful, you can access userCredential.user to get the user information
+      const user = userCredential.user;
+
+      // ... Store user data in Firebase Realtime Database or Firestore if needed
+
+      // Clear input fields and error message
+      this.setState({ email: '', password: '', username: '', errorMessage: null });
+
+      Alert.alert('Account created', 'You have successfully signed up!');
+    } catch (error) {
+      // Handle the error, e.g., show an error message
+      console.error('Error creating user:', error);
+      this.setState({ errorMessage: error.message });
+    }
   };
 
   render() {
     return (
-      <View>
+      <View style={styles.container}>
+        {this.state.errorMessage && (
+          <Text style={styles.error}>{this.state.errorMessage}</Text>
+        )}
         <TextInput
           placeholder="Email"
           onChangeText={(email) => this.setState({ email })}
           value={this.state.email}
+          style={styles.input}
         />
         <TextInput
           placeholder="Username"
           onChangeText={(username) => this.setState({ username })}
           value={this.state.username}
+          style={styles.input}
         />
         <TextInput
           placeholder="Password"
           onChangeText={(password) => this.setState({ password })}
           value={this.state.password}
+          style={styles.input}
           secureTextEntry
         />
         <Button title="Sign Up" onPress={this.handleSignUp} />
@@ -67,26 +82,25 @@ class SignupScreen extends Component {
   }
 }
 
-//lokal styling for signup viewt
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'flex-top',
-      alignItems: 'center',
-      marginTop: 50,
-    },
-    title: {
-      fontSize: 24,
-      marginBottom: 20,
-    },
-    input: {
-      width: '80%',
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      marginBottom: 10,
-      padding: 10,
-    },
-  });
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  input: {
+    width: '80%',
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    padding: 10,
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+  },
+});
 
 export default SignupScreen;
