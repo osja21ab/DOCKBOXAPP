@@ -5,6 +5,7 @@ import HomeScreen from './components/HomeScreen';
 import ProfileScreen from './components/ProfileScreen';
 import LocationDetailScreen from './components/LocationDetailScreen';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import SignupScreen from './components/SignupScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -24,6 +25,7 @@ const App = () => {
         screenOptions={{ headerShown: false }} // Hide the header for Drawer navigator
       >
         <Drawer.Screen name="Main" component={MainNavigator} />
+        <Drawer.screen name="Signup" component={SignupScreen} />
         
       </Drawer.Navigator>
     </NavigationContainer>
