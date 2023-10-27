@@ -1,12 +1,10 @@
 import React, { useLayoutEffect } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
+import { DrawerActions } from '@react-navigation/native'; // Import DrawerActions
 
-const HomeScreen = () => {
-  const navigation = useNavigation();
-
+const HomeScreen = ({ navigation }) => {
   const copenhagenCoordinates = {
     latitude: 55.6616,
     longitude: 12.5925,
@@ -43,7 +41,7 @@ const HomeScreen = () => {
       ),
       headerLeft: () => (
         <TouchableOpacity
-          // onPress={() => /* Handle menu icon click action */} // Add the action you want
+          onPress={() => navigation.dispatch(DrawerActions.openDrawer())} // Open the drawer
           style={styles.menuIcon}
         >
           <Feather name="menu" size={30} color="#FCCE85" />
