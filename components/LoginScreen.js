@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
     marginTop: 400,
   },
   input: {
+    fontSize: 16,
     borderBottomWidth: 1,
     borderColor: 'rgba(252,206,133,1)',
     backgroundColor: 'transparent',
