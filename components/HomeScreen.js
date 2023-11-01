@@ -2,7 +2,7 @@ import React, { useLayoutEffect } from 'react';
 import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
-import { DrawerActions } from '@react-navigation/native'; // Import DrawerActions
+import { DrawerActions } from '@react-navigation/native';
 
 const HomeScreen = ({ navigation }) => {
   const copenhagenCoordinates = {
@@ -15,6 +15,21 @@ const HomeScreen = ({ navigation }) => {
   const dockBoxCoordinates = {
     latitude: 55.667369,
     longitude: 12.576421,
+  };
+
+  const dockBoxCoordinates2 = {
+    latitude: 55.678374,
+    longitude: 12.592681,
+  };
+
+  const dockBoxCoordinates3 = {
+    latitude: 55.642400,
+    longitude: 12.553285,
+  };
+
+  const dockBoxCoordinates4 = {
+    latitude: 55.706804,
+    longitude: 12.598841,
   };
 
   useLayoutEffect(() => {
@@ -41,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
       ),
       headerLeft: () => (
         <TouchableOpacity
-          onPress={() => navigation.dispatch(DrawerActions.openDrawer())} // Open the drawer
+          onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
           style={styles.menuIcon}
         >
           <Feather name="menu" size={30} color="#FCCE85" />
@@ -58,7 +73,7 @@ const HomeScreen = ({ navigation }) => {
       >
         <Marker
           coordinate={dockBoxCoordinates}
-          title="DockBox"
+          title="DockBox Bryggen"
           onPress={() => navigation.navigate('LocationDetailScreen')}
         >
           <View style={styles.customMarker}>
@@ -68,6 +83,44 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </Marker>
+
+        <Marker
+          coordinate={dockBoxCoordinates2}
+          title="DockBox Nyhavn "
+          onPress={() => navigation.navigate('LocationDetailScreen')}
+        >
+          <View style={styles.customMarker}>
+            <Image
+              source={require('../assets/your_logo.png')}
+              style={styles.markerImage}
+            />
+          </View>
+        </Marker>
+        <Marker
+          coordinate={dockBoxCoordinates3}
+          title="DockBox Slusen"
+          onPress={() => navigation.navigate('LocationDetailScreen')}
+        >
+          <View style={styles.customMarker}>
+            <Image
+              source={require('../assets/your_logo.png')}
+              style={styles.markerImage}
+            />
+          </View>
+        </Marker>
+        <Marker
+          coordinate={dockBoxCoordinates4}
+          title="DockBox Nordhavn"
+          onPress={() => navigation.navigate('LocationDetailScreen')}
+        >
+          <View style={styles.customMarker}>
+            <Image
+              source={require('../assets/your_logo.png')}
+              style={styles.markerImage}
+            />
+          </View>
+        </Marker>
+
       </MapView>
     </View>
   );

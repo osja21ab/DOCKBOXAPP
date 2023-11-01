@@ -110,7 +110,7 @@ const LocationDetailScreen = () => {
 
       {!isCameraVisible && !rentalProductId && (
         <>
-          <Text style={styles.title}>Product List</Text>
+          <Text style={styles.title}>Rentals</Text>
           <FlatList
             data={products}
             keyExtractor={(item) => item.id.toString()}
