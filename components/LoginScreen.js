@@ -15,24 +15,25 @@ class LoginScreen extends React.Component {
 
   handleLogin = async () => {
     const { email, password } = this.state;
-
+  
     if (!email || !password) {
       this.setState({ errorMessage: 'Email and password are required' });
       return;
     }
-
+  
     try {
       const auth = getAuth(fireBase);
       await signInWithEmailAndPassword(auth, email, password);
-      this.props.navigation.navigate('HomeScreen');
       this.setState({ email: '', password: '', errorMessage: null });
+      this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
     } catch (error) {
       this.setState({ errorMessage: 'Invalid email or password' });
     }
   }
+  
 
   handleSignUp = () => {
-    this.props.navigation.navigate('Signup');
+    this.props.navigation.navigate('Signup'); // Ensure 'Signup' matches the correct name in the navigator
   }
 
   render() {
@@ -65,7 +66,6 @@ class LoginScreen extends React.Component {
                 style={styles.inputStyle} // Password input style
                 secureTextEntry={true} // Hide the text
               />
-             
             </View>
           </View>
           <TouchableOpacity style={[styles.loginButton, { width: 300 }]} onPress={this.handleLogin}>
@@ -84,7 +84,6 @@ class LoginScreen extends React.Component {
     );
   }
 }
-
 const styles = StyleSheet.create({
   background: {
     flex: 1,

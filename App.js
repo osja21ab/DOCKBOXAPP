@@ -19,17 +19,27 @@ const MainNavigator = () => (
   </Stack.Navigator>
 );
 
+const AuthNavigator = ({ setIsLoggedIn }) => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Login" options={{ title: 'Login' }}>
+      {(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+    </Stack.Screen>
+    <Stack.Screen name="Signup" component={SignupScreen} />
+  </Stack.Navigator>
+);
+
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
   return (
     <NavigationContainer>
-      <Drawer.Navigator
-        initialRouteName="Main"
-        screenOptions={{ headerShown: false }} // Hide the header for Drawer navigator
-      >
-        <Drawer.Screen name="Main" component={MainNavigator} />
-        <Drawer.Screen name="Signup" component={SignupScreen} />
-        <Drawer.Screen name="Login" component={LoginScreen} />
-      </Drawer.Navigator>
+      {isLoggedIn ? (
+        <Drawer.Navigator screenOptions={{ headerShown: false }}>
+          <Drawer.Screen name="Map" component={MainNavigator} />
+        </Drawer.Navigator>
+      ) : (
+        <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
+      )}
     </NavigationContainer>
   );
 };
