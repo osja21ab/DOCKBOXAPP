@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontFamily: '',
-    color: 'rgba(252,206,133,1)',
+    color: '#FCCE85',
     fontSize: 41,
     marginBottom: 30,
     position: 'absolute',
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 16,
     borderBottomWidth: 1,
-    borderColor: 'rgba(252,206,133,1)',
+    borderColor: '#FCCE85',
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   passwordInput: {
     borderBottomWidth: 1,
-    borderColor: 'rgba(252,206,133,1)',
+    borderColor: '#FCCE85',
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
@@ -145,11 +145,6 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: 8,
   },
-  iconStyle: {
-    color: 'rgba(252,206,133,1)',
-    fontSize: 24,
-    paddingRight: 8,
-  },
   error: {
     color: 'red',
     marginBottom: 20,
@@ -166,7 +161,7 @@ const styles = StyleSheet.create({
     width: 300,
   },
   buttonText: {
-    color: 'black',
+    color: '#095167',
     fontWeight: 'bold',
   },
   orContainer: {
