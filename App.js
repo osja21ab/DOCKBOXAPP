@@ -9,6 +9,7 @@ import SignupScreen from './components/SignupScreen';
 import LoginScreen from './components/LoginScreen';
 import GetstartedScreen from './components/GetstartedScreen';
 import FAQScreen from './components/FAQScreen';
+import TermsScreen from './components/TermsScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,6 +41,7 @@ const App = () => {
           <Drawer.Screen name="Map" component={MainNavigator} />
           <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
+          <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
         </Drawer.Navigator>
       ) : (
         <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
