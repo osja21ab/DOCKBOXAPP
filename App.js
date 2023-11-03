@@ -38,7 +38,20 @@ const App = () => {
   return (
     <NavigationContainer>
       {isLoggedIn ? (
-        <Drawer.Navigator screenOptions={{ headerShown: false }}>
+        <Drawer.Navigator
+          screenOptions={{
+            headerShown: false,
+            drawerStyle: {
+              backgroundColor: '#095167', // Change background color of the drawer
+              width: 230, // Set width of the drawer
+            },
+            drawerLabelStyle: {
+              fontSize: 15, // Adjust font size of drawer labels
+              fontWeight: 'bold', // Make drawer labels bold
+              color: '#FCCE85', // Set color of drawer labels
+            },
+          }}
+        >
           <Drawer.Screen name="Map" component={MainNavigator} />
           <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="Recommended Trips" component={RecommendedScreen} options={{ headerShown: true }} />
@@ -51,6 +64,5 @@ const App = () => {
     </NavigationContainer>
   );
 };
-
 
 export default App;
