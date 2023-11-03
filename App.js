@@ -10,6 +10,7 @@ import LoginScreen from './components/LoginScreen';
 import GetstartedScreen from './components/GetstartedScreen';
 import FAQScreen from './components/FAQScreen';
 import TermsScreen from './components/TermsScreen';
+import RecommendedScreen from './components/RecommendedScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,6 +41,7 @@ const App = () => {
         <Drawer.Navigator screenOptions={{ headerShown: false }}>
           <Drawer.Screen name="Map" component={MainNavigator} />
           <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
+          <Drawer.Screen name="Recommended Trips" component={RecommendedScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
         </Drawer.Navigator>
