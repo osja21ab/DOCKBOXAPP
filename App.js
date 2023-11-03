@@ -35,13 +35,18 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator screenOptions={{ headerShown: false }}>
-        <Drawer.Screen name="Map" component={MainNavigator} />
-        <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} /> 
-        <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
-      </Drawer.Navigator>
+      {isLoggedIn ? (
+        <Drawer.Navigator screenOptions={{ headerShown: false }}>
+          <Drawer.Screen name="Map" component={MainNavigator} />
+          <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
+          <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
+        </Drawer.Navigator>
+      ) : (
+        <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
+      )}
     </NavigationContainer>
   );
 };
+
 
 export default App;
