@@ -13,8 +13,7 @@ import SlusenScreen from './components/SlusenScreen';
 import NordhavnScreen from './components/NordhavnScreen';
 import BryggenScreen from './components/BryggenScreen';
 import RentScreen from './components/RentScreen';
-//import RentScreen from './components/RentScreen';
-
+import MyTrips from './components/MyTrips';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,6 +27,7 @@ const MainNavigator = () => (
     <Stack.Screen name="NordhavnScreen" component={NordhavnScreen} />
     <Stack.Screen name="NyhavnScreen" component={NyhavnScreen} />
     <Stack.Screen name="RentScreen" component={RentScreen} />
+    <Stack.Screen name='MyTrips' component={MyTrips} />
   </Stack.Navigator>
 );
 
