@@ -33,7 +33,7 @@ class LoginScreen extends React.Component {
   
 
   handleSignUp = () => {
-    this.props.navigation.navigate('Signup'); // Ensure 'Signup' matches the correct name in the navigator
+    this.props.navigation.navigate('Signup'); 
   }
 
   render() {

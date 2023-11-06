@@ -11,6 +11,7 @@ import GetstartedScreen from './components/GetstartedScreen';
 import FAQScreen from './components/FAQScreen';
 import TermsScreen from './components/TermsScreen';
 import RecommendedScreen from './components/RecommendedScreen';
+import SubscriptionScreen from './components/SubscriptionScreen';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -55,6 +56,7 @@ const App = () => {
           <Drawer.Screen name="Map" component={MainNavigator} />
           <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="Recommended Trips" component={RecommendedScreen} options={{ headerShown: true }} />
+          <Drawer.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
         </Drawer.Navigator>
