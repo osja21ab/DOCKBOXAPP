@@ -12,6 +12,7 @@ import FAQScreen from './components/FAQScreen';
 import TermsScreen from './components/TermsScreen';
 import RecommendedScreen from './components/RecommendedScreen';
 import SubscriptionScreen from './components/SubscriptionScreen';
+import MyTrips from './components/MyTrips';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -21,6 +22,7 @@ const MainNavigator = () => (
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
     <Stack.Screen name="LocationDetailScreen" component={LocationDetailScreen} />
+    <Stack.Screen name="MyTrips" component={MyTrips} />
   </Stack.Navigator>
 );
 
