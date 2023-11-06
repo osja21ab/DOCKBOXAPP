@@ -1,7 +1,7 @@
-
 // Import the necessary Firebase modules
 import { initializeApp } from "firebase/app";
 import { getDatabase } from "firebase/database";
+import { getFirestore } from "firebase/firestore"; // Import Firestore
 import { getAuth, browserLocalPersistence } from "firebase/auth";
 
 // Your Firebase configuration here
@@ -24,6 +24,10 @@ const auth = getAuth(app);
 auth.setPersistence(browserLocalPersistence);
 
 // Get a reference to the Firebase Realtime Database
-const db = getDatabase(app);
+//const db = getDatabase(app);
+const db = getFirestore(app);
 
-export { db, auth };
+// Get a reference to the Firebase Firestore
+const firestore = getFirestore(app);
+
+export { db, auth, firestore };

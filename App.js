@@ -4,11 +4,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import HomeScreen from './components/HomeScreen';
 import ProfileScreen from './components/ProfileScreen';
-import LocationDetailScreen from './components/LocationDetailScreen';
+import NyhavnScreen from './components/NyhavnScreen';
 import SignupScreen from './components/SignupScreen';
 import LoginScreen from './components/LoginScreen';
 import GetstartedScreen from './components/GetstartedScreen';
 import FAQScreen from './components/FAQScreen';
+import SlusenScreen from './components/SlusenScreen';
+import NordhavnScreen from './components/NordhavnScreen';
+import BryggenScreen from './components/BryggenScreen';
+import RentScreen from './components/RentScreen';
+//import RentScreen from './components/RentScreen';
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -17,7 +23,11 @@ const MainNavigator = () => (
   <Stack.Navigator>
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
     <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
-    <Stack.Screen name="LocationDetailScreen" component={LocationDetailScreen} />
+    <Stack.Screen name="BryggenScreen" component={BryggenScreen} />
+    <Stack.Screen name="SlusenScreen" component={SlusenScreen} />
+    <Stack.Screen name="NordhavnScreen" component={NordhavnScreen} />
+    <Stack.Screen name="NyhavnScreen" component={NyhavnScreen} />
+    <Stack.Screen name="RentScreen" component={RentScreen} />
   </Stack.Navigator>
 );
 

@@ -5,7 +5,7 @@ import productsData from '../products.json';
 import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons'; // Import Feather icons
 
-const LocationDetailScreen = () => {
+const NordhavnScreen = () => {
   const navigation = useNavigation();
   const [products, setProducts] = useState([]);
   const [isCameraVisible, setCameraVisible] = useState(false);
@@ -197,4 +197,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LocationDetailScreen;
+export default NordhavnScreen;

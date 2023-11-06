@@ -74,7 +74,7 @@ const HomeScreen = ({ navigation }) => {
         <Marker
           coordinate={dockBoxCoordinates}
           title="DockBox Bryggen"
-          onPress={() => navigation.navigate('LocationDetailScreen')}
+          onPress={() => navigation.navigate('BryggenScreen')}
         >
           <View style={styles.customMarker}>
             <Image
@@ -87,7 +87,7 @@ const HomeScreen = ({ navigation }) => {
         <Marker
           coordinate={dockBoxCoordinates2}
           title="DockBox Nyhavn "
-          onPress={() => navigation.navigate('LocationDetailScreen')}
+          onPress={() => navigation.navigate('NyhavnScreen')}
         >
           <View style={styles.customMarker}>
             <Image
@@ -99,7 +99,7 @@ const HomeScreen = ({ navigation }) => {
         <Marker
           coordinate={dockBoxCoordinates3}
           title="DockBox Slusen"
-          onPress={() => navigation.navigate('LocationDetailScreen')}
+          onPress={() => navigation.navigate('SlusenScreen')}
         >
           <View style={styles.customMarker}>
             <Image
@@ -111,7 +111,7 @@ const HomeScreen = ({ navigation }) => {
         <Marker
           coordinate={dockBoxCoordinates4}
           title="DockBox Nordhavn"
-          onPress={() => navigation.navigate('LocationDetailScreen')}
+          onPress={() => navigation.navigate('NordhavnScreen')}
         >
           <View style={styles.customMarker}>
             <Image
