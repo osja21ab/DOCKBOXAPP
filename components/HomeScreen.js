@@ -1,8 +1,14 @@
-import React, { useLayoutEffect } from 'react';
-import { StyleSheet, View, Image, TouchableOpacity } from 'react-native';
+import React, { useLayoutEffect, useEffect, useState } from 'react';
+import { StyleSheet, View, Image, Alert } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
+import {
+  requestForegroundPermissionsAsync,
+  getCurrentPositionAsync,
+  Accuracy,
+} from 'expo-location';
 
 const HomeScreen = ({ navigation }) => {
   const copenhagenCoordinates = {
@@ -11,6 +17,9 @@ const HomeScreen = ({ navigation }) => {
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   };
+
+  const [userLocation, setUserLocation] = useState(null);
+  const [mapRegion, setMapRegion] = useState(copenhagenCoordinates);
 
   const dockBoxCoordinates = {
     latitude: 55.667369,
@@ -65,12 +74,61 @@ const HomeScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    checkAndRequestLocationPermission();
+  }, []);
+
+  const checkAndRequestLocationPermission = async () => {
+    const { status } = await requestForegroundPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert(
+        'Location Permission Required',
+        'You need to grant location permission to use this feature.',
+        [{ text: 'OK', style: 'default' }]
+      );
+    } else {
+      getUserLocation();
+    }
+  };
+
+  const getUserLocation = async () => {
+    try {
+      const location = await getCurrentPositionAsync({ accuracy: Accuracy.High });
+      setUserLocation(location.coords);
+
+      setMapRegion({
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      });
+    } catch (error) {
+      console.error('Error getting user location:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        initialRegion={copenhagenCoordinates}
+        initialRegion={mapRegion}
       >
+        {userLocation && (
+          <Marker
+            coordinate={userLocation}
+            title="Your Location"
+            onPress={() => navigation.navigate('ProfileScreen')}
+          >
+            <View style={styles.customMarker}>
+              <Image
+                source={require('../assets/me.png')}
+                style={styles.markerImage}
+              />
+            </View>
+          </Marker>
+        )}
+
         <Marker
           coordinate={dockBoxCoordinates}
           title="DockBox Bryggen"
@@ -86,7 +144,7 @@ const HomeScreen = ({ navigation }) => {
 
         <Marker
           coordinate={dockBoxCoordinates2}
-          title="DockBox Nyhavn "
+          title="DockBox Nyhavn"
           onPress={() => navigation.navigate('NyhavnScreen')}
         >
           <View style={styles.customMarker}>
@@ -96,6 +154,7 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </Marker>
+
         <Marker
           coordinate={dockBoxCoordinates3}
           title="DockBox Slusen"
@@ -108,6 +167,7 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </Marker>
+
         <Marker
           coordinate={dockBoxCoordinates4}
           title="DockBox Nordhavn"
@@ -120,7 +180,6 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
         </Marker>
-
       </MapView>
     </View>
   );
@@ -143,8 +202,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 30,
-    borderWidth: 2,
-    borderColor: 'lightgreen',
   },
   headerImage: {
     width: 100,
