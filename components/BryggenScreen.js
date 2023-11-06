@@ -92,8 +92,12 @@ const BryggenScreen = () => {
     Linking.openURL('tel:+4526716980');
   };
 
-  const getImageSource = () => {
-    return require('../assets/paddle.png');
+  const getImageSource = (productName) => {
+    if (productName && productName.length > 5) {
+      return require('../assets/Kajak.png');
+    } else {
+      return require('../assets/paddle.png');
+    }
   };
 
   const handleRefresh = () => {
@@ -126,7 +130,7 @@ const BryggenScreen = () => {
           renderItem={({ item }) => (
             <TouchableOpacity onPress={handleProductPress}>
               <View style={styles.productItem}>
-                <Image source={getImageSource()} style={styles.productImage} />
+                <Image source={getImageSource(item.productName)} style={styles.productImage} />
                 <Text style={styles.productName}>{item.productName}</Text>
               </View>
             </TouchableOpacity>
@@ -186,3 +190,4 @@ const styles = StyleSheet.create({
 });
 
 export default BryggenScreen;
+

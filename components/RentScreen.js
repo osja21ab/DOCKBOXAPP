@@ -10,9 +10,27 @@ const RentScreen = ({ route, navigation }) => {
 
   const handleRentPress = async () => {
     try {
-      // Update the RentStatus field in Firestore to 2 (rented)
-      const productRef = doc(db, 'bryggen', product.id);
-      await updateDoc(productRef, {
+      // Update the RentStatus field in Firestore to 2 (rented) for "Bryggen"
+      const bryggenProductRef = doc(db, 'bryggen', product.id);
+      await updateDoc(bryggenProductRef, {
+        RentStatus: 2,
+      });
+
+      // Update the RentStatus field in Firestore to 2 (rented) for "Sluseholmen"
+      const sluseholmenProductRef = doc(db, 'sluseholmen', product.id);
+      await updateDoc(sluseholmenProductRef, {
+        RentStatus: 2,
+      });
+
+      // Update the RentStatus field in Firestore to 2 (rented) for "Nyhavn"
+      const nyhavnProductRef = doc(db, 'nyhavn', product.id);
+      await updateDoc(nyhavnProductRef, {
+        RentStatus: 2,
+      });
+
+      // Update the RentStatus field in Firestore to 2 (rented) for "Nordhavn"
+      const nordhavnProductRef = doc(db, 'nordhavn', product.id);
+      await updateDoc(nordhavnProductRef, {
         RentStatus: 2,
       });
 
