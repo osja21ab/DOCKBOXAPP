@@ -13,6 +13,7 @@ class SignupScreen extends Component {
       email: '',
       password: '',
       confirmPassword: '',
+      /* stripeID */
       errorMessage: null,
       fontsLoaded: false,
     };

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, TextInput, StyleSheet, Text, ImageBackground, TouchableOpacity, StatusBar } from 'react-native';
 import fireBase from '../firebase/fireBase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
 
 class LoginScreen extends React.Component {
   constructor(props) {
@@ -12,25 +13,28 @@ class LoginScreen extends React.Component {
       errorMessage: '',
     };
   }
+  
+handleLogin = async () => {
+  const { email, password } = this.state;
 
-  handleLogin = async () => {
-    const { email, password } = this.state;
-  
-    if (!email || !password) {
-      this.setState({ errorMessage: 'Email and password are required' });
-      return;
-    }
-  
-    try {
-      const auth = getAuth(fireBase);
-      await signInWithEmailAndPassword(auth, email, password);
-      this.setState({ email: '', password: '', errorMessage: null });
-      this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
-    } catch (error) {
-      this.setState({ errorMessage: 'Invalid email or password' });
-    }
+  if (!email || !password) {
+    this.setState({ errorMessage: 'Email and password are required' });
+    return;
   }
-  
+
+  try {
+    const auth = getAuth(fireBase);
+    await signInWithEmailAndPassword(auth, email, password);
+    this.setState({ email: '', password: '', errorMessage: null });
+    this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
+
+    // Add user to Firestore after successful login
+    const db = getFirestore();
+    await setDoc(doc(db, "Users", email), { loggedIn: true });
+  } catch (error) {
+    this.setState({ errorMessage: 'Invalid email or password' });
+  }
+}
 
   handleSignUp = () => {
     this.props.navigation.navigate('Signup'); // Ensure 'Signup' matches the correct name in the navigator
