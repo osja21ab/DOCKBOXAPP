@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Alert } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { StyleSheet, View, Image, Alert, Text } from 'react-native';
+import MapView, { Marker, Callout } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
@@ -39,6 +39,26 @@ const HomeScreen = ({ navigation }) => {
   const dockBoxCoordinates4 = {
     latitude: 55.706804,
     longitude: 12.598841,
+  };
+
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    if (lat1 && lon1 && lat2 && lon2) {
+      const R = 6371; // Radius of the Earth in kilometers
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) *
+          Math.cos(lat2 * (Math.PI / 180)) *
+          Math.sin(dLon / 2) *
+          Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const distance = R * c;
+
+      return distance.toFixed(2); // Round to two decimal places
+    } else {
+      return 'N/A';
+    }
   };
 
   useLayoutEffect(() => {
@@ -118,7 +138,6 @@ const HomeScreen = ({ navigation }) => {
           <Marker
             coordinate={userLocation}
             title="Your Location"
-            onPress={() => navigation.navigate('ProfileScreen')}
           >
             <View style={styles.customMarker}>
               <Image
@@ -131,8 +150,13 @@ const HomeScreen = ({ navigation }) => {
 
         <Marker
           coordinate={dockBoxCoordinates}
-          title="DockBox Bryggen"
-          onPress={() => navigation.navigate('BryggenScreen')}
+          title= "DockBox Islands brygge"
+          onPress={() => navigation.navigate('BryggenScreen', { distance: calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            dockBoxCoordinates.latitude,
+            dockBoxCoordinates.longitude
+          ) })}
         >
           <View style={styles.customMarker}>
             <Image
@@ -144,8 +168,13 @@ const HomeScreen = ({ navigation }) => {
 
         <Marker
           coordinate={dockBoxCoordinates2}
-          title="DockBox Nyhavn"
-          onPress={() => navigation.navigate('NyhavnScreen')}
+          title= "DockBox Nyhavn"
+          onPress={() => navigation.navigate('NyhavnScreen', { distance: calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            dockBoxCoordinates2.latitude,
+            dockBoxCoordinates2.longitude
+          ) })}
         >
           <View style={styles.customMarker}>
             <Image
@@ -157,8 +186,13 @@ const HomeScreen = ({ navigation }) => {
 
         <Marker
           coordinate={dockBoxCoordinates3}
-          title="DockBox Slusen"
-          onPress={() => navigation.navigate('SlusenScreen')}
+          title= "DockBox Sluseholmen"
+          onPress={() => navigation.navigate('SlusenScreen', { distance: calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            dockBoxCoordinates3.latitude,
+            dockBoxCoordinates3.longitude
+          ) })}
         >
           <View style={styles.customMarker}>
             <Image
@@ -170,8 +204,13 @@ const HomeScreen = ({ navigation }) => {
 
         <Marker
           coordinate={dockBoxCoordinates4}
-          title="DockBox Nordhavn"
-          onPress={() => navigation.navigate('NordhavnScreen')}
+          title= "DockBox Nordhavn"
+          onPress={() => navigation.navigate('NordhavnScreen', { distance: calculateDistance(
+            userLocation.latitude,
+            userLocation.longitude,
+            dockBoxCoordinates4.latitude,
+            dockBoxCoordinates4.longitude
+          ) })}
         >
           <View style={styles.customMarker}>
             <Image

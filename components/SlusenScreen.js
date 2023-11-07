@@ -6,18 +6,22 @@ import { Feather } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
 import { app } from '../firebase/fireBase';
+import { useRoute } from '@react-navigation/native';
 
 const db = getFirestore(app);
 
 const SlusenScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  const distance = route.params?.distance || 'N/A';
+
   const [products, setProducts] = useState([]);
   const [hasPermission, setHasPermission] = useState(null);
   const [isCameraVisible, setCameraVisible] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: 'Sluseholmen',
+      headerTitle: `Nyhavn (Distance: ${distance} km)`,
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={30} color="#FCCE85" style={styles.headerLeftIcon} />
