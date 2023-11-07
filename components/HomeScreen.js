@@ -138,6 +138,7 @@ const HomeScreen = ({ navigation }) => {
           <Marker
             coordinate={userLocation}
             title="Your Location"
+            onPress={() => navigation.navigate('ProfileScreen')}
           >
             <View style={styles.customMarker}>
               <Image
