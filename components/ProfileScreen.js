@@ -6,6 +6,8 @@ import { getFirestore, doc, updateDoc } from "firebase/firestore";
 import { auth, db } from '../firebase/fireBase'; // adjust the path to your fireBase.js file
 import { setDoc } from "firebase/firestore";
 import { getDoc } from "firebase/firestore";
+import { deleteUser } from 'firebase/auth';
+import { deleteDoc } from 'firebase/firestore';
 
 
 const ProfileScreen = ({ setIsLoggedIn }) => {
@@ -52,8 +54,25 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
         }
     };
 
-    const handleDeleteAccount = () => {
-        // Handle the delete account logic here
+    const handleDeleteAccount = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const email = user.email.toLowerCase(); // Convert email to lowercase
+            const userDoc = doc(db, "Users", email);
+    
+            try {
+                // Delete the user's document from Firestore
+                await deleteDoc(userDoc);
+    
+                // Delete the user from Firebase auth
+                await deleteUser(user);
+    
+                // Set isLoggedIn state to false
+                setIsLoggedIn(false);
+            } catch (error) {
+                console.error("Error deleting user: ", error);
+            }
+        }
     };
 
     return (

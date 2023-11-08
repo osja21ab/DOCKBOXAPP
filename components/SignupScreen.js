@@ -33,30 +33,32 @@ class SignupScreen extends Component {
 
   handleSignUp = async () => {
     const { email, password, confirmPassword } = this.state;
-
+  
     if (!email || !password || !confirmPassword) {
       this.setState({ errorMessage: 'All fields are required' });
       return;
     }
-
+  
     if (password !== confirmPassword) {
       this.setState({ errorMessage: 'Passwords do not match' });
       return;
     }
-
+  
     if (password.length < 6) {
       this.setState({ errorMessage: 'Password should be at least 6 characters long' });
       return;
     }
-
+  
     try {
       const auth = getAuth(fireBase);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-
+  
       this.setState({ email: '', password: '', confirmPassword: '', errorMessage: null });
-
-      Alert.alert('Account created', 'You have successfully signed up!');
+  
+      Alert.alert('Account created', 'You have successfully signed up!', [
+        { text: 'OK', onPress: () => this.props.navigation.navigate('Login') }
+      ]);
     } catch (error) {
       console.error('Error creating user:', error);
       this.setState({ errorMessage: error.message });
