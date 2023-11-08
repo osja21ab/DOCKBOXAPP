@@ -1,9 +1,11 @@
-import React, { useLayoutEffect, useEffect, useState } from 'react';
-import { StyleSheet, View, Image, Alert, Text } from 'react-native';
+import React, { useLayoutEffect, useEffect, useState, useContext, useRef } from 'react';
+import { StyleSheet, View, Image, Alert, Text, Button, Animated } from 'react-native';
 import MapView, { Marker, Callout } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
+import UserContext from './UserContext';
+import { getFirestore, doc, collection, onSnapshot } from "firebase/firestore";
 import {
   requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
@@ -11,6 +13,7 @@ import {
 } from 'expo-location';
 
 const HomeScreen = ({ navigation }) => {
+  const { userId } = useContext(UserContext);
   const copenhagenCoordinates = {
     latitude: 55.6616,
     longitude: 12.5925,
@@ -20,6 +23,38 @@ const HomeScreen = ({ navigation }) => {
 
   const [userLocation, setUserLocation] = useState(null);
   const [mapRegion, setMapRegion] = useState(copenhagenCoordinates);
+  const [hasRentedProducts, setHasRentedProducts] = useState(false);
+  const [rentedProducts, setRentedProducts] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const sessionBoxHeight = useRef(new Animated.Value(0.15)).current;
+const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = () => {
+      const db = getFirestore();
+      const userRef = doc(db, 'Users', userId); // userId is now the user's email
+  
+      const unsubscribe = onSnapshot(collection(userRef, 'rentedProducts'), (snapshot) => {
+        const products = snapshot.docs.map(doc => doc.data());
+        setRentedProducts(products);
+      });
+  
+      return unsubscribe; // Clean up function
+    };
+  
+    const unsubscribe = fetchUserData();
+    return () => unsubscribe(); // Clean up on unmount
+  }, [userId]);
+
+  useEffect(() => {
+    if (rentedProducts.length > 0) {
+      setHasRentedProducts(true);
+    } else { 
+      setHasRentedProducts(false);
+    }
+  }, [rentedProducts]);
+
+  
 
   const dockBoxCoordinates = {
     latitude: 55.667369,
@@ -112,6 +147,15 @@ const HomeScreen = ({ navigation }) => {
     }
   };
 
+  const onReturnPress = () => {
+    Animated.timing(sessionBoxHeight, {
+      toValue: 0.5,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    setIsSessionBoxExpanded(false);
+  };
+
   const getUserLocation = async () => {
     try {
       const location = await getCurrentPositionAsync({ accuracy: Accuracy.High });
@@ -127,12 +171,28 @@ const HomeScreen = ({ navigation }) => {
       console.error('Error getting user location:', error);
     }
   };
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
 
+    return () => clearInterval(timer); // Clean up on unmount
+  }, []);
+
+  const onMapPress = () => {
+    Animated.timing(sessionBoxHeight, {
+      toValue: 0.15,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+    setIsSessionBoxExpanded(true);
+  };
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
         initialRegion={mapRegion}
+         onPress={onMapPress}
       >
         {userLocation && (
           <Marker
@@ -212,6 +272,8 @@ const HomeScreen = ({ navigation }) => {
             dockBoxCoordinates4.latitude,
             dockBoxCoordinates4.longitude
           ) })}
+
+          
         >
           <View style={styles.customMarker}>
             <Image
@@ -221,6 +283,33 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </Marker>
       </MapView>
+
+
+      {hasRentedProducts && (
+        <Animated.View style={[styles.sessionBox, { height: sessionBoxHeight.interpolate({ inputRange: [0, 1], outputRange: ['15%', '90%'] }) }]}>
+         <Text style={styles.sessionHeader}> Session </Text>
+          {isSessionBoxExpanded && rentedProducts.map((product, index) => {
+            const rentedAt = new Date(product.rentedAt.seconds * 1000);
+            const now = new Date();
+            const diff = Math.abs(currentTime - rentedAt);
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+
+            return (
+              <View key={index}>
+                <Text style={styles.sessionText}> Have a good trip with {product.productName}!</Text>
+                <Text style={styles.sessionText}>Time since rented: {hours}h {minutes}m {seconds}s</Text>
+                <TouchableOpacity style={styles.button} onPress={onReturnPress}>
+  <Text style={styles.buttonText}>Return {product.productName}</Text>
+</TouchableOpacity>
+              </View>
+            );
+          })}
+        </Animated.View>
+      )}
+
+      
     </View>
   );
 };
@@ -252,6 +341,36 @@ const styles = StyleSheet.create({
   },
   menuIcon: {
     marginLeft: 20,
+  },
+  sessionBox: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    backgroundColor: 'rgba(9, 81, 103, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sessionHeader: {
+    fontSize: 24,
+    color: '#FCCE85',
+    fontWeight: 'bold',
+    marginBottom: '2%',
+  },
+  sessionText: {
+    fontSize: 16,
+    color: '#FCCE85',
+    padding: 10,
+  },
+  button: {
+    backgroundColor: '#FCCE85',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#000',
+    textAlign: 'center',
+    fontSize: 18,
   },
 });
 

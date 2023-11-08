@@ -4,7 +4,7 @@ import fireBase from '../firebase/fireBase';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import * as Font from 'expo-font';
 import { Feather } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons'; // Import FontAwesome from expo vector icons
+
 
 class SignupScreen extends Component {
   constructor(props) {

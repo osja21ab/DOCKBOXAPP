@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import getAuth and onAuthStateChanged from Firebase
+import UserContext from './components/UserContext'; // Import UserContext
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
@@ -14,6 +16,9 @@ import NordhavnScreen from './components/NordhavnScreen';
 import BryggenScreen from './components/BryggenScreen';
 import RentScreen from './components/RentScreen';
 import MyTrips from './components/MyTrips';
+
+
+
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -44,23 +49,38 @@ const AuthNavigator = ({ setIsLoggedIn }) => (
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [userId, setUserId] = useState(null);
+  const auth = getAuth(); // Initialize auth
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.email); // Set the user's email when they log in
+      } else {
+        setUserId(null); // Clear the user's email when they log out
+      }
+    });
+  
+    return () => unsubscribe();
+  }, []);
+
+
 
   return (
-    <NavigationContainer>
-      {isLoggedIn ? (
-        <Drawer.Navigator screenOptions={{ headerShown: false }}>
-          <Drawer.Screen name="Map">
-            {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
-          </Drawer.Screen>
-          <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
-          <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
-        </Drawer.Navigator>
-      ) : (
-        <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
-      )}
-    </NavigationContainer>
+    <UserContext.Provider value={{ userId }}>
+      <NavigationContainer>
+        {isLoggedIn ? (
+          <Drawer.Navigator screenOptions={{ headerShown: false }}>
+            <Drawer.Screen name="Map">
+              {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Drawer.Screen>
+            <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
+          </Drawer.Navigator>
+        ) : (
+          <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
+        )}
+      </NavigationContainer>
+    </UserContext.Provider>
   );
-};
-
-
+ };
 export default App;
