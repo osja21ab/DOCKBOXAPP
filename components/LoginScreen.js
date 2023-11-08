@@ -13,28 +13,30 @@ class LoginScreen extends React.Component {
       errorMessage: '',
     };
   }
+  handleLogin = async () => {
+    let { email, password } = this.state;
   
-handleLogin = async () => {
-  const { email, password } = this.state;
-
-  if (!email || !password) {
-    this.setState({ errorMessage: 'Email and password are required' });
-    return;
+    if (!email || !password) {
+      this.setState({ errorMessage: 'Email and password are required' });
+      return;
+    }
+  
+    // Convert email to lowercase
+    email = email.toLowerCase();
+  
+    try {
+      const auth = getAuth(fireBase);
+      await signInWithEmailAndPassword(auth, email, password);
+      this.setState({ email: '', password: '', errorMessage: null });
+      this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
+  
+      // Add user to Firestore after successful login
+      const db = getFirestore();
+      await setDoc(doc(db, "Users", email), { loggedIn: true });
+    } catch (error) {
+      this.setState({ errorMessage: 'Invalid email or password' });
+    }
   }
-
-  try {
-    const auth = getAuth(fireBase);
-    await signInWithEmailAndPassword(auth, email, password);
-    this.setState({ email: '', password: '', errorMessage: null });
-    this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
-
-    // Add user to Firestore after successful login
-    const db = getFirestore();
-    await setDoc(doc(db, "Users", email), { loggedIn: true });
-  } catch (error) {
-    this.setState({ errorMessage: 'Invalid email or password' });
-  }
-}
 
   handleSignUp = () => {
     this.props.navigation.navigate('Signup'); // Ensure 'Signup' matches the correct name in the navigator

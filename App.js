@@ -18,10 +18,12 @@ import MyTrips from './components/MyTrips';
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
-const MainNavigator = () => (
+const MainNavigator = ({ setIsLoggedIn }) => (
   <Stack.Navigator>
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
-    <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+    <Stack.Screen name="ProfileScreen">
+      {(props) => <ProfileScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+    </Stack.Screen>
     <Stack.Screen name="BryggenScreen" component={BryggenScreen} />
     <Stack.Screen name="SlusenScreen" component={SlusenScreen} />
     <Stack.Screen name="NordhavnScreen" component={NordhavnScreen} />
@@ -36,7 +38,7 @@ const AuthNavigator = ({ setIsLoggedIn }) => (
     <Stack.Screen name="Login" options={{ title: 'Login' }}>
       {(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
     </Stack.Screen>
-    <Stack.Screen name="Signup" component={SignupScreen} />
+    <Stack.Screen name="SignupScreen" component={SignupScreen} />
   </Stack.Navigator>
 );
 
@@ -47,7 +49,9 @@ const App = () => {
     <NavigationContainer>
       {isLoggedIn ? (
         <Drawer.Navigator screenOptions={{ headerShown: false }}>
-          <Drawer.Screen name="Map" component={MainNavigator} />
+          <Drawer.Screen name="Map">
+            {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
+          </Drawer.Screen>
           <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
           <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
         </Drawer.Navigator>

@@ -4,6 +4,7 @@ import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore"; // Import Firestore
 import { getAuth, browserLocalPersistence } from "firebase/auth";
 
+
 // Your Firebase configuration here
 const firebaseConfig = {
   apiKey: "AIzaSyCUgSNJZiaxnFmpFjFsujj-02Z5GYENlpU",

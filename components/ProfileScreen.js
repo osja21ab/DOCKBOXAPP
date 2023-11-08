@@ -2,8 +2,13 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { auth, db } from '../firebase/fireBase'; // adjust the path to your fireBase.js file
+import { setDoc } from "firebase/firestore";
+import { getDoc } from "firebase/firestore";
 
-const ProfileScreen = () => {
+
+const ProfileScreen = ({ setIsLoggedIn }) => {
     const navigation = useNavigation();
     React.useLayoutEffect(() => {
         navigation.setOptions({
@@ -25,8 +30,26 @@ const ProfileScreen = () => {
         });
     }, [navigation]);
 
-    const handleLogOut = () => {
-        // Handle the log out logic here
+    const handleLogOut = async () => {
+        const user = auth.currentUser;
+        if (user) {
+            const email = user.email.toLowerCase(); // Convert email to lowercase
+            const userDoc = doc(db, "Users", email);
+            const docSnap = await getDoc(userDoc);
+    
+            if (!docSnap.exists()) {
+                // If the document does not exist, create it
+                await setDoc(userDoc, { loggedIn: false });
+            } else {
+                // If the document exists, update it
+                await updateDoc(userDoc, { loggedIn: false });
+            }
+    
+            // Set isLoggedIn state to false
+            setIsLoggedIn(false);
+    
+            // Add any additional logout logic here
+        }
     };
 
     const handleDeleteAccount = () => {
