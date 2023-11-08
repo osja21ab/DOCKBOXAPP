@@ -184,8 +184,11 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
       toValue: 0.15,
       duration: 500,
       useNativeDriver: false,
-    }).start();
-    setIsSessionBoxExpanded(true);
+    }).start(() => {
+      setTimeout(() => {
+        setIsSessionBoxExpanded(true);
+      }, 10);
+    });
   };
   return (
     <View style={styles.container}>
@@ -286,28 +289,30 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
 
 
       {hasRentedProducts && (
-        <Animated.View style={[styles.sessionBox, { height: sessionBoxHeight.interpolate({ inputRange: [0, 1], outputRange: ['15%', '90%'] }) }]}>
-         <Text style={styles.sessionHeader}> Session </Text>
-          {isSessionBoxExpanded && rentedProducts.map((product, index) => {
-            const rentedAt = new Date(product.rentedAt.seconds * 1000);
-            const now = new Date();
-            const diff = Math.abs(currentTime - rentedAt);
-            const hours = Math.floor(diff / 3600000);
-            const minutes = Math.floor((diff % 3600000) / 60000);
-            const seconds = Math.floor((diff % 60000) / 1000);
+  <Animated.View style={[styles.sessionBox, { height: sessionBoxHeight.interpolate({ inputRange: [0, 1], outputRange: ['15%', '90%'] }) }]}>
+    <Animated.Text style={[styles.sessionHeader, { marginTop: sessionBoxHeight.interpolate({ inputRange: [0.15, 0.5], outputRange: ['0%', '-80%'] }) }]}>
+  Session
+</Animated.Text>
+    {isSessionBoxExpanded && rentedProducts.map((product, index) => {
+      const rentedAt = new Date(product.rentedAt.seconds * 1000);
+      const now = new Date();
+      const diff = Math.abs(currentTime - rentedAt);
+      const hours = Math.floor(diff / 3600000);
+      const minutes = Math.floor((diff % 3600000) / 60000);
+      const seconds = Math.floor((diff % 60000) / 1000);
 
-            return (
-              <View key={index}>
-                <Text style={styles.sessionText}> Have a good trip with {product.productName}!</Text>
-                <Text style={styles.sessionText}>Time since rented: {hours}h {minutes}m {seconds}s</Text>
-                <TouchableOpacity style={styles.button} onPress={onReturnPress}>
-  <Text style={styles.buttonText}>Return {product.productName}</Text>
-</TouchableOpacity>
-              </View>
-            );
-          })}
-        </Animated.View>
-      )}
+      return (
+        <View key={index}>
+          <Text style={styles.sessionText}> Have a good trip with {product.productName}!</Text>
+          <Text style={styles.sessionText}>Time since rented: {hours}h {minutes}m {seconds}s</Text>
+          <TouchableOpacity style={styles.button} onPress={onReturnPress}>
+            <Text style={styles.buttonText}>Return {product.productName}</Text>
+          </TouchableOpacity>
+        </View>
+      );
+    })}
+  </Animated.View>
+)}
 
       
     </View>
@@ -354,7 +359,8 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FCCE85',
     fontWeight: 'bold',
-    marginBottom: '2%',
+
+  
   },
   sessionText: {
     fontSize: 16,
