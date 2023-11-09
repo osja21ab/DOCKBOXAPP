@@ -111,20 +111,22 @@ const PaymentScreen = ({navigation}) => {
         keyboardType="numeric"
         placeholder="Enter card number"
       />
-      <TextInput
-        style={styles.input}
-        value={expiry}
-        onChangeText={setExpiry}
-        keyboardType="numeric"
-        placeholder="MM/YY"
-      />
-      <TextInput
-        style={styles.input}
-        value={cvv}
-        onChangeText={setCVV}
-        keyboardType="numeric"
-        placeholder="CVV"
-      />
+      <View style={{ flexDirection: 'row' }}>
+  <TextInput
+    style={styles.inputdate}
+    value={expiry}
+    onChangeText={setExpiry}
+    keyboardType="numeric"
+    placeholder="MM/YY"
+  />
+  <TextInput
+    style={styles.inputcvv}
+    value={cvv}
+    onChangeText={setCVV}
+    keyboardType="numeric"
+    placeholder="CVV"
+  />
+</View>
 
       <View style={styles.cardTypeContainer}>
         <Button title={`Card Type: ${cardType || 'Select'}`} onPress={() => setShowCardTypePicker(!showCardTypePicker)} />
@@ -135,9 +137,9 @@ const PaymentScreen = ({navigation}) => {
           onRequestClose={() => setShowCardTypePicker(false)}
         >
           <View style={styles.modalView}>
-            <Button title="Visa" onPress={() => selectCardType('Visa')} />
-            <Button title="Mastercard" onPress={() => selectCardType('Mastercard')} />
-            <Button title="Dankort" onPress={() => selectCardType('Dankort')} />
+            <Button title="Visa" color={'#FCCE85'} onPress={() => selectCardType('Visa')} />
+            <Button title="Mastercard" color={'#FCCE85'} onPress={() => selectCardType('Mastercard')} />
+            <Button title="Dankort" color={'#FCCE85'} onPress={() => selectCardType('Dankort')} />
           </View>
         </Modal>
       </View>
@@ -152,10 +154,10 @@ const PaymentScreen = ({navigation}) => {
           cards.map((card) => (
             <View key={card.id} style={styles.cardContainer}>
               <View style={styles.cardDetails}>
-                <Text>Card Number: {card.cardNumber}</Text>
-                <Text>Expiry: {card.expiry}</Text>
-                <Text>CVV: {card.cvv}</Text>
-                <Text>Card Type: {card.cardType}</Text>
+                <Text style={styles.cardDetailstext}>Card Number: {card.cardNumber}</Text>
+                <Text style={styles.cardDetailstext}>Expiry: {card.expiry}</Text>
+                <Text style={styles.cardDetailstext}>CVV: {card.cvv}</Text>
+                <Text style={styles.cardDetailstext}>Card Type: {card.cardType}</Text>
               </View>
               <Image
                 source={
@@ -188,28 +190,65 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 10,
+    color: '#095167',
+    alignSelf: 'center',
   },
   input: {
-    height: 40,
-    borderColor: 'gray',
+    height: 45,
+    borderColor: '#095167',
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 10,
+    borderRadius: 20,
+    width: 350,
+    alignSelf: 'center',
+  },
+  inputdate: {
+    height: 45,
+    borderColor: '#095167',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 20,
+    width: 140,
+    marginRight: 10,
+    marginLeft: 30,
+  },
+  inputcvv: {
+    height: 45,
+    borderColor: '#095167',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 10,
+    borderRadius: 20,
+    width: 140,
+    
+  
+
   },
   noCardText: {
     fontSize: 16,
-    color: 'grey',
+    color: 'gray',
   },
   cardContainer: {
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 5,
+    padding: 20,
+    backgroundColor: '#095167',
+    borderRadius: 20,
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
+  
+
   },
   cardDetails: {
     flex: 1,
+  
+  },
+  cardDetailstext: {
+    color: '#FCCE85',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   cardImage: {
     width: 50,
@@ -220,18 +259,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
+     
   },
   modalView: {
     margin: 50,
-    backgroundColor: 'white',
+    backgroundColor: '#0',
     marginTop: '90%',
-    borderRadius: 10,
+    borderRadius: 20,
     padding: 10,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
-      width: 0,
-      height: 2,
+      width: 10,
+      height: 10,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
