@@ -5,7 +5,8 @@ import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
 import UserContext from './UserContext';
-import { getFirestore, doc, collection, onSnapshot } from "firebase/firestore";
+import { onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, auth, doc, onSnapshot, collection, getDocs, deleteDoc } from "firebase/firestore";
 import {
   requestForegroundPermissionsAsync,
   getCurrentPositionAsync,
@@ -61,6 +62,35 @@ const [endTime, setEndTime] = useState(null);
     }
   }, [rentedProducts]);
 
+  const deleteRentedProducts = async () => {
+    try {
+      const user = await new Promise((resolve, reject) => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          unsubscribe();
+          resolve(user);
+        }, reject);
+      });
+  
+      if (!user) {
+        // Handle the case where the user is not authenticated
+        console.error('User is not authenticated');
+        return;
+      }
+  
+      const email = user.email.toLowerCase();
+      const rentedProductsRef = collection(db, 'Users', email, 'rentedProducts');
+      const querySnapshot = await getDocs(rentedProductsRef);
+  
+      querySnapshot.forEach((doc) => {
+        deleteDoc(doc.ref);
+      });
+  
+      console.log('Rented products deleted successfully');
+    } catch (error) {
+      console.error('Error deleting rented products:', error);
+    }
+  };
+  
   
 
   const dockBoxCoordinates = {
@@ -311,6 +341,7 @@ const [endTime, setEndTime] = useState(null);
       const hours = Math.floor(totalMinutes / 60);
       const minutes = totalMinutes % 60;
       const seconds = Math.floor((diff % 60000) / 1000);
+    
 
       const price = totalMinutes * 2; // 2 DKK per minute
 
@@ -320,11 +351,14 @@ const [endTime, setEndTime] = useState(null);
             You spent {hours}h {minutes}m's renting {product.productName}
           </Text>
           <Text style={styles.sessionprice}>
-  The total price for your rent = <Text style={styles.boldText}>{price},00 DKK</Text>
-</Text>
+            The total price for your rent = <Text style={styles.boldText}>{price},00 DKK</Text>
+          </Text>
         </>
       );
     })}
+    <TouchableOpacity style={styles.button} onPress={deleteRentedProducts}>
+      <Text style={styles.buttonText}>Delete Rented Products</Text>
+    </TouchableOpacity>
   </>
 )}
     {isSessionBoxExpanded && rentedProducts.map((product, index) => {
