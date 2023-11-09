@@ -16,9 +16,10 @@ const RentScreen = ({ route, navigation }) => {
       const locations = ['bryggen', 'Sluseholmen', 'Nyhavn', 'Nordhavn'];
       const auth = getAuth(app);
       const userEmail = auth.currentUser.email.toLowerCase();
+      const productId = `product${Math.floor(Math.random() * 20) + 1}`;
 
-      const rentedProductsRef = collection(db, 'Users', userEmail, 'rentedProducts');
-      await addDoc(rentedProductsRef, {
+      const rentedProductsRef = doc(db, 'Users', userEmail, 'rentedProducts',productId);
+      await setDoc(rentedProductsRef, {
         productName: product.productName,
         rentedAt: new Date(),
         ReturnStatus: false, // Add the ReturnStatus field 

@@ -79,10 +79,11 @@ const App = () => {
            headerShown: false,
            drawerStyle: {
              backgroundColor: '#095167', // Change background color of the drawer
-             width: 230, // Set width of the drawer
+             width: 275, // Set width of the drawer
+             paddingTop: 20,
            },
            drawerLabelStyle: {
-             fontSize: 15, // Adjust font size of drawer labels
+             fontSize: 20, // Adjust font size of drawer labels
              fontWeight: 'bold', // Make drawer labels bold
              color: '#FCCE85', // Set color of drawer labels
            },

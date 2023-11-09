@@ -1,18 +1,13 @@
 import React, { useLayoutEffect, useEffect, useState, useContext, useRef } from 'react';
-import { StyleSheet, View, Image, Alert, Text, Button, Animated } from 'react-native';
-import MapView, { Marker, Callout } from 'react-native-maps';
+import { StyleSheet, View, Image, Alert, Text, TouchableOpacity, Animated } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native';
+import { requestForegroundPermissionsAsync, getCurrentPositionAsync, Accuracy } from 'expo-location';
+import { getAuth } from 'firebase/auth';
+import { getFirestore, collection, doc, onSnapshot, getDocs, deleteDoc, query, where, updateDoc } from 'firebase/firestore';
 import UserContext from './UserContext';
-import { onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, auth, doc, onSnapshot, collection, getDocs, deleteDoc } from "firebase/firestore";
-import {
-  requestForegroundPermissionsAsync,
-  getCurrentPositionAsync,
-  Accuracy,
-} from 'expo-location';
-
+import { app } from '../firebase/fireBase'
 const HomeScreen = ({ navigation }) => {
   const { userId } = useContext(UserContext);
   const copenhagenCoordinates = {
@@ -28,24 +23,24 @@ const HomeScreen = ({ navigation }) => {
   const [rentedProducts, setRentedProducts] = useState([]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const sessionBoxHeight = useRef(new Animated.Value(0.15)).current;
-const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
-const [endTime, setEndTime] = useState(null);
+  const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
+  const [endTime, setEndTime] = useState(null);
 
   useEffect(() => {
     const fetchUserData = () => {
       const db = getFirestore();
-      const userRef = doc(db, 'Users', userId); // userId is now the user's email
-  
+      const userRef = doc(db, 'Users', userId.toLowerCase());
+
       const unsubscribe = onSnapshot(collection(userRef, 'rentedProducts'), (snapshot) => {
-        const products = snapshot.docs.map(doc => doc.data());
+        const products = snapshot.docs.map((doc) => doc.data());
         setRentedProducts(products);
       });
-  
-      return unsubscribe; // Clean up function
+
+      return unsubscribe;
     };
-  
+
     const unsubscribe = fetchUserData();
-    return () => unsubscribe(); // Clean up on unmount
+    return () => unsubscribe();
   }, [userId]);
 
   useEffect(() => {
@@ -55,42 +50,47 @@ const [endTime, setEndTime] = useState(null);
   }, [isSessionBoxExpanded]);
 
   useEffect(() => {
-    if (rentedProducts.length > 0) {
-      setHasRentedProducts(true);
-    } else { 
-      setHasRentedProducts(false);
-    }
+    setHasRentedProducts(rentedProducts.length > 0);
   }, [rentedProducts]);
 
   const deleteRentedProducts = async () => {
     try {
-      const user = await new Promise((resolve, reject) => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-          unsubscribe();
-          resolve(user);
-        }, reject);
-      });
-  
-      if (!user) {
-        // Handle the case where the user is not authenticated
-        console.error('User is not authenticated');
-        return;
-      }
-  
-      const email = user.email.toLowerCase();
-      const rentedProductsRef = collection(db, 'Users', email, 'rentedProducts');
+      const auth = getAuth();
+      const email = auth.currentUser.email.toLowerCase();
+      const rentedProductsRef = collection(getFirestore(), 'Users', email, 'rentedProducts');
       const querySnapshot = await getDocs(rentedProductsRef);
-  
+
       querySnapshot.forEach((doc) => {
         deleteDoc(doc.ref);
       });
-  
+
       console.log('Rented products deleted successfully');
     } catch (error) {
       console.error('Error deleting rented products:', error);
     }
   };
+
+ 
+
+  const checkRentStatus = async () => {
+    const locations = ['bryggen', 'Nordhavn', 'Nyhavn', 'Sluseholmen'];
+    const db = getFirestore(app);
+
+    for (const location of locations) {
+      const q = query(collection(db, location), where("RentStatus", "==", 2));
+      const querySnapshot = await getDocs(q);
   
+      if (!querySnapshot.empty) {
+        
+        querySnapshot.forEach((doc) => {
+          updateDoc(doc.ref, { RentStatus: 1 });
+        });
+       return;
+      }
+    }
+  };
+  
+  checkRentStatus();
   
 
   const dockBoxCoordinates = {
@@ -356,9 +356,15 @@ const [endTime, setEndTime] = useState(null);
         </>
       );
     })}
-    <TouchableOpacity style={styles.button} onPress={deleteRentedProducts}>
-      <Text style={styles.buttonText}>Delete Rented Products</Text>
-    </TouchableOpacity>
+    <TouchableOpacity 
+  style={styles.button1} 
+  onPress={async () => {
+    await checkRentStatus();
+    deleteRentedProducts();
+  }}
+>
+  <Text style={styles.buttonText1}>Return and Pay</Text>
+</TouchableOpacity>
   </>
 )}
     {isSessionBoxExpanded && rentedProducts.map((product, index) => {
@@ -462,10 +468,26 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
   },
+
+  button1: {
+    backgroundColor: '#FCCE85',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 120,
+    marginVertical: -180,
+  },
+  
   buttonText: {
     color: '#000',
     textAlign: 'center',
     fontSize: 18,
+  },
+    buttonText1: {
+      color: '#000',
+      textAlign: 'center',
+      fontSize: 18,
+      marginBottom: 0,
+      marginVertical: 0,
   },
   titleStyle: {
     fontSize: 20,
