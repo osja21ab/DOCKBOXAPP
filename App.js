@@ -17,6 +17,9 @@ import BryggenScreen from './components/BryggenScreen';
 import RentScreen from './components/RentScreen';
 import MyTrips from './components/MyTrips';
 import PaymentScreen from './components/PaymentScreen';
+import RecommendedTrips from './components/RecommendedScreen';
+import TermsScreen from './components/TermsScreen';
+import SubscriptionScreen from './components/SubscriptionScreen';
 
 
 
@@ -71,12 +74,28 @@ const App = () => {
     <UserContext.Provider value={{ userId }}>
       <NavigationContainer>
         {isLoggedIn ? (
-          <Drawer.Navigator screenOptions={{ headerShown: false }}>
+         <Drawer.Navigator
+         screenOptions={{
+           headerShown: false,
+           drawerStyle: {
+             backgroundColor: '#095167', // Change background color of the drawer
+             width: 230, // Set width of the drawer
+           },
+           drawerLabelStyle: {
+             fontSize: 15, // Adjust font size of drawer labels
+             fontWeight: 'bold', // Make drawer labels bold
+             color: '#FCCE85', // Set color of drawer labels
+           },
+         }}
+       >
             <Drawer.Screen name="Map">
               {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Drawer.Screen>
             <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="Recommended Trips" component={RecommendedTrips} options={{ headerShown: true }} />
             <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
           </Drawer.Navigator>
         ) : (
           <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
