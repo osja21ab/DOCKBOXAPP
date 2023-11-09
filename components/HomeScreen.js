@@ -28,6 +28,7 @@ const HomeScreen = ({ navigation }) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const sessionBoxHeight = useRef(new Animated.Value(0.15)).current;
 const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
+const [endTime, setEndTime] = useState(null);
 
   useEffect(() => {
     const fetchUserData = () => {
@@ -45,6 +46,12 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
     const unsubscribe = fetchUserData();
     return () => unsubscribe(); // Clean up on unmount
   }, [userId]);
+
+  useEffect(() => {
+    if (!isSessionBoxExpanded) {
+      setEndTime(new Date());
+    }
+  }, [isSessionBoxExpanded]);
 
   useEffect(() => {
     if (rentedProducts.length > 0) {
@@ -154,6 +161,7 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
       useNativeDriver: false,
     }).start();
     setIsSessionBoxExpanded(false);
+    console.log('Return product')
   };
 
   const getUserLocation = async () => {
@@ -290,9 +298,35 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
 
       {hasRentedProducts && (
   <Animated.View style={[styles.sessionBox, { height: sessionBoxHeight.interpolate({ inputRange: [0, 1], outputRange: ['15%', '90%'] }) }]}>
-    <Animated.Text style={[styles.sessionHeader, { marginTop: sessionBoxHeight.interpolate({ inputRange: [0.15, 0.5], outputRange: ['0%', '-80%'] }) }]}>
+    <Animated.Text style={[styles.sessionHeader, { marginTop: sessionBoxHeight.interpolate({ inputRange: [0.15, 0.5], outputRange: ['0%', '-65%'] }) }]}>
   Session
 </Animated.Text>
+{!isSessionBoxExpanded && (
+  <>
+    <Text style={styles.titleStyle}>Thank you for choosing DockBox </Text>
+    {rentedProducts.map((product, index) => {
+      const rentedAt = new Date(product.rentedAt.seconds * 1000);
+      const diff = Math.abs(endTime - rentedAt);
+      const totalMinutes = Math.floor(diff / 60000); // convert total time difference to minutes
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      const seconds = Math.floor((diff % 60000) / 1000);
+
+      const price = totalMinutes * 2; // 2 DKK per minute
+
+      return (
+        <>
+          <Text style={styles.sessionText} key={index}>
+            You spent {hours}h {minutes}m's renting {product.productName}
+          </Text>
+          <Text style={styles.sessionprice}>
+  The total price for your rent = <Text style={styles.boldText}>{price},00 DKK</Text>
+</Text>
+        </>
+      );
+    })}
+  </>
+)}
     {isSessionBoxExpanded && rentedProducts.map((product, index) => {
       const rentedAt = new Date(product.rentedAt.seconds * 1000);
       const now = new Date();
@@ -300,11 +334,12 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
       const hours = Math.floor(diff / 3600000);
       const minutes = Math.floor((diff % 3600000) / 60000);
       const seconds = Math.floor((diff % 60000) / 1000);
+     
 
       return (
         <View key={index}>
-          <Text style={styles.sessionText}> Have a good trip with {product.productName}!</Text>
-          <Text style={styles.sessionText}>Time since rented: {hours}h {minutes}m {seconds}s</Text>
+          <Text style={styles.boxText}> Have a good trip with {product.productName}!</Text>
+          <Text style={styles.boxText}>Time since rented: {hours}h {minutes}m {seconds}s</Text>
           <TouchableOpacity style={styles.button} onPress={onReturnPress}>
             <Text style={styles.buttonText}>Return {product.productName}</Text>
           </TouchableOpacity>
@@ -318,6 +353,7 @@ const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
@@ -359,14 +395,33 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: '#FCCE85',
     fontWeight: 'bold',
-
-  
   },
-  sessionText: {
-    fontSize: 16,
+  boldText: {
+    fontWeight: 'bold',
+  },
+  boxText: {
+    fontSize: 18,
     color: '#FCCE85',
     padding: 10,
+    marginLeft: 10, // Adjust this to align on the left side
+    marginVertical: 0,
   },
+
+  sessionText: {
+    fontSize: 18,
+    color: '#FCCE85',
+    padding: 10,
+    marginLeft: -110, // Adjust this to align on the left side
+    marginVertical: 30,
+  },
+  sessionprice: {
+    fontSize: 18,
+    color: '#FCCE85',
+    padding: 10,
+    marginLeft: -40,
+    marginVertical: -40,
+  },
+  
   button: {
     backgroundColor: '#FCCE85',
     padding: 10,
@@ -378,6 +433,26 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 18,
   },
+  titleStyle: {
+    fontSize: 20,
+    color: '#FCCE85',
+    fontWeight: 'bold',
+    textAlign: 'left',
+    marginLeft: -60,
+    marginVertical: -20,
+    marginTop: 30,
+  },
+
+  titleStyle: {
+    fontSize: 20,
+    color: '#FCCE85',
+    fontWeight: 'bold',
+    textAlign: 'left',
+    marginLeft: -60,
+    marginVertical: -20,
+    marginTop: 30,
+  },
 });
+
 
 export default HomeScreen;
