@@ -58,15 +58,15 @@ const MyTrips = () => {
                     <View style={styles.tripInfo}>
                         <Text style={styles.title}>{trip.title}</Text>
                         <View style={styles.detailContainer}>
-                            <Feather name="activity" size={24} color="black" />
+                            <Feather name="activity" size={24} color="#095167" />
                             <Text style={styles.detailText}>{trip.distance}</Text>
                         </View>
                         <View style={styles.detailContainer}>
-                            <Feather name="dollar-sign" size={24} color="black" />
+                            <Feather name="dollar-sign" size={24} color="#095167" />
                             <Text style={styles.detailText}>{trip.price}</Text>
                         </View>
                         <View style={styles.detailContainer}>
-                            <Feather name="calendar" size={24} color="black" />
+                            <Feather name="calendar" size={24} color="#095167" />
                             <Text style={styles.detailText}>{trip.date}</Text>
                         </View>
                     </View>
@@ -104,18 +104,24 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 8,
+        color: '#095167',
     },
     detailContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 4,
+        color: '#095167',
     },
     detailText: {
         marginLeft: 8,
         fontSize: 16,
+        color: '#095167',
+        fontWeight: 'bold',
     },
     menuIcon: {
         marginLeft: 16,
+        color: '#FCCE85',
+        
     },
 });
 

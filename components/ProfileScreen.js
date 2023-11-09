@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -12,14 +12,17 @@ import { deleteDoc } from 'firebase/firestore';
 
 const ProfileScreen = ({ setIsLoggedIn }) => {
     const navigation = useNavigation();
+    const [email, setEmail] = useState(''); // Add this line
     React.useLayoutEffect(() => {
         navigation.setOptions({
-            headerTitle: 'Your profile',
+            title: 'Your profile',
             headerStyle: {
-                height: 90,
                 backgroundColor: '#095167',
             },
             headerTintColor: '#FCCE85',
+            headerTitleStyle: {
+                height: 90, // Adjust this height to modify the header height
+            },
             headerLeft: () => (
                 <Feather
                     name="arrow-left"
@@ -32,8 +35,18 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
         });
     }, [navigation]);
 
+    useEffect(() => {
+        const user = auth.currentUser;
+        if (user) {
+            setEmail(user.email.toLowerCase());
+        } else {
+            setEmail('');
+        }
+    }, [setIsLoggedIn]);
+
     const handleLogOut = async () => {
         const user = auth.currentUser;
+        
         if (user) {
             const email = user.email.toLowerCase(); // Convert email to lowercase
             const userDoc = doc(db, "Users", email);
@@ -77,8 +90,9 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
 
     return (
         <View style={styles.container}>
-            <Image source={require('../assets/userPicture.jpg')} style={styles.profileImage} />
-            <Text style={styles.username}>Your email</Text>
+            <View style={styles.headerBox} />
+            <Image source={require('../assets/profil.png')} style={styles.profileImage} />
+            <Text style={styles.username}>{email}</Text>
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChangePassword')}>
                 <Text style={styles.buttonText}>Change Password</Text>
@@ -95,7 +109,7 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
                 <Feather name="map" style={styles.featherStyling} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button}onPress={() => navigation.navigate('PaymentScreen')}> 
                 <Text style={styles.buttonText}>Payment Methods</Text>
                 <Feather name="credit-card" style={styles.featherStyling} />
             </TouchableOpacity>
@@ -117,21 +131,29 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'top',
-        marginTop: 50,
+        marginTop: 0,
+    },
+    headerBox: {
+        backgroundColor: '#095167',
+        height: 170,
+        width: '100%',
+        position: 'absolute',
+        top: 0,
     },
     profileImage: {
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 200,
         borderRadius: 150,
         marginBottom: 20,
+        marginTop:50
     },
     username: {
         fontSize: 16,
         marginBottom: 30,
-        color: '#2A3439',
+        color: 'grey',
     },
     button: {
-        backgroundColor: '#095167',
+        backgroundColor: 'transparent',
         padding: 15,
         borderRadius: 50,
         marginBottom: 20,
@@ -141,19 +163,20 @@ const styles = StyleSheet.create({
         alignItems: 'center', // Center vertically
     },
     buttonText: {
-        color: '#FCCE85',
+        color: '#095167',
         fontSize: 20,
+        fontWeight: 'bold',
     },
     featherStyling: {
-        color: '#FCCE85',
-        fontSize: 20,
+        color: '#095167',
+        fontSize: 30,
     },
     bottomButtons: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: '100%',
         paddingHorizontal: 20,
-        marginTop: 40,
+        marginTop: 20,
     },
     accountButton: {
         backgroundColor: '#095167',
@@ -168,9 +191,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
     },
-    menuIcon: {
-        marginLeft: 16,
-    },
+    
 });
 
 export default ProfileScreen;

@@ -16,6 +16,7 @@ import NordhavnScreen from './components/NordhavnScreen';
 import BryggenScreen from './components/BryggenScreen';
 import RentScreen from './components/RentScreen';
 import MyTrips from './components/MyTrips';
+import PaymentScreen from './components/PaymentScreen';
 
 
 
@@ -35,6 +36,7 @@ const MainNavigator = ({ setIsLoggedIn }) => (
     <Stack.Screen name="NyhavnScreen" component={NyhavnScreen} />
     <Stack.Screen name="RentScreen" component={RentScreen} />
     <Stack.Screen name='MyTrips' component={MyTrips} />
+    <Stack.Screen name='PaymentScreen' component={PaymentScreen} />
   </Stack.Navigator>
 );
 

@@ -13,7 +13,7 @@ const RentScreen = ({ route, navigation }) => {
   //tjek om bryggen skal være med småt
   const handleRentPress = async () => {
     try {
-      const locations = ['Bryggen', 'Sluseholmen', 'Nyhavn', 'Nordhavn'];
+      const locations = ['bryggen', 'Sluseholmen', 'Nyhavn', 'Nordhavn'];
       const auth = getAuth(app);
       const userEmail = auth.currentUser.email.toLowerCase();
 

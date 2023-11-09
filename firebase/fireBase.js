@@ -1,6 +1,5 @@
 // Import the necessary Firebase modules
 import { initializeApp } from "firebase/app";
-import { getDatabase } from "firebase/database";
 import { getFirestore } from "firebase/firestore"; // Import Firestore
 import { getAuth, browserLocalPersistence } from "firebase/auth";
 
