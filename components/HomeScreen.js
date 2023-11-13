@@ -8,6 +8,7 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, doc, onSnapshot, getDocs, deleteDoc, query, where, updateDoc } from 'firebase/firestore';
 import UserContext from './UserContext';
 import { app } from '../firebase/fireBase'
+
 const HomeScreen = ({ navigation }) => {
   const { userId } = useContext(UserContext);
   const copenhagenCoordinates = {
@@ -75,22 +76,21 @@ const HomeScreen = ({ navigation }) => {
   const checkRentStatus = async () => {
     const locations = ['bryggen', 'Nordhavn', 'Nyhavn', 'Sluseholmen'];
     const db = getFirestore(app);
-
+  
     for (const location of locations) {
       const q = query(collection(db, location), where("RentStatus", "==", 2));
       const querySnapshot = await getDocs(q);
   
       if (!querySnapshot.empty) {
-        
         querySnapshot.forEach((doc) => {
           updateDoc(doc.ref, { RentStatus: 1 });
         });
-       return;
+        return;
       }
     }
   };
   
-  checkRentStatus();
+ 
   
 
   const dockBoxCoordinates = {
@@ -356,7 +356,7 @@ const HomeScreen = ({ navigation }) => {
         </>
       );
     })}
-    <TouchableOpacity 
+   <TouchableOpacity 
   style={styles.button1} 
   onPress={async () => {
     await checkRentStatus();
