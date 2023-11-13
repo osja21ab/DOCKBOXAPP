@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   question: {
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 18,
     color: 'black', // Question text color
     
   },
