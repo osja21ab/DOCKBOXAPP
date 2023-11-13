@@ -1,13 +1,14 @@
 import React, { useLayoutEffect, useEffect, useState, useContext, useRef } from 'react';
-import { StyleSheet, View, Image, Alert, Text, TouchableOpacity, Animated } from 'react-native';
+import { Button, Modal, StyleSheet, View, Image, Alert, Text, TouchableOpacity, Animated } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 import { Feather } from '@expo/vector-icons';
-import { DrawerActions } from '@react-navigation/native';
+import { DrawerActions, useFocusEffect } from '@react-navigation/native';
 import { requestForegroundPermissionsAsync, getCurrentPositionAsync, Accuracy } from 'expo-location';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, doc, onSnapshot, getDocs, deleteDoc, query, where, updateDoc } from 'firebase/firestore';
 import UserContext from './UserContext';
 import { app } from '../firebase/fireBase'
+import { Picker } from '@react-native-picker/picker';
 
 const HomeScreen = ({ navigation }) => {
   const { userId } = useContext(UserContext);
@@ -26,6 +27,9 @@ const HomeScreen = ({ navigation }) => {
   const sessionBoxHeight = useRef(new Animated.Value(0.15)).current;
   const [isSessionBoxExpanded, setIsSessionBoxExpanded] = useState(true);
   const [endTime, setEndTime] = useState(null);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [cards, setCards] = useState([]);
 
   useEffect(() => {
     const fetchUserData = () => {
@@ -43,6 +47,40 @@ const HomeScreen = ({ navigation }) => {
     const unsubscribe = fetchUserData();
     return () => unsubscribe();
   }, [userId]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const getCards = async () => {
+        try {
+          const db = getFirestore(app);
+          const auth = getAuth();
+          const user = auth.currentUser;
+    
+          if (user) {
+            const userEmail = user.email.toLowerCase();
+            const userDocRef = doc(db, 'Users', userEmail);
+            const paymentMethodCollectionRef = collection(userDocRef, 'PaymentMethod');
+            const querySnapshot = await getDocs(paymentMethodCollectionRef);
+            const userCards = [];
+            querySnapshot.forEach((doc) => {
+              userCards.push({ id: doc.id, ...doc.data() });
+            });
+            setCards(userCards);
+          } else {
+            console.log('No user logged in.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+        }
+      };
+    
+      getCards();
+    }, [])
+  );
+
+  useEffect(() => {
+    console.log('selectedCard state variable:', selectedCard);
+  }, [selectedCard]);
 
   useEffect(() => {
     if (!isSessionBoxExpanded) {
@@ -328,45 +366,115 @@ const HomeScreen = ({ navigation }) => {
 
       {hasRentedProducts && (
   <Animated.View style={[styles.sessionBox, { height: sessionBoxHeight.interpolate({ inputRange: [0, 1], outputRange: ['15%', '90%'] }) }]}>
-    <Animated.Text style={[styles.sessionHeader, { marginTop: sessionBoxHeight.interpolate({ inputRange: [0.15, 0.5], outputRange: ['0%', '-65%'] }) }]}>
-  Session
-</Animated.Text>
-{!isSessionBoxExpanded && (
-  <>
-    <Text style={styles.titleStyle}>Thank you for choosing DockBox </Text>
-    {rentedProducts.map((product, index) => {
-      const rentedAt = new Date(product.rentedAt.seconds * 1000);
-      const diff = Math.abs(endTime - rentedAt);
-      const totalMinutes = Math.floor(diff / 60000); // convert total time difference to minutes
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
-      const seconds = Math.floor((diff % 60000) / 1000);
-    
+    <Animated.Text style={[styles.sessionHeader, { marginTop: sessionBoxHeight.interpolate({ inputRange: [0.15, 0.5], outputRange: ['0%', '-35%'] }) }]}>
+      Session
+    </Animated.Text>
+    {!isSessionBoxExpanded && (
+      <>
+        <Text style={styles.titleStyle}>Thank you for choosing DockBox </Text>
+        {rentedProducts.map((product, index) => {
+          const rentedAt = new Date(product.rentedAt.seconds * 1000);
+          const diff = Math.abs(endTime - rentedAt);
+          const totalMinutes = Math.floor(diff / 60000); // convert total time difference to minutes
+          const hours = Math.floor(totalMinutes / 60);
+          const minutes = totalMinutes % 60;
+          const seconds = Math.floor((diff % 60000) / 1000);
+          const price = totalMinutes * 2; // 2 DKK per minute
 
-      const price = totalMinutes * 2; // 2 DKK per minute
+          return (
+            <>
+              <Text style={styles.sessionText} key={index}>
+                You spent {hours}h {minutes}m's renting {product.productName}
+              </Text>
+              <Text style={styles.sessionprice}>
+                The total price for your rent = <Text style={styles.boldText}>{price},00 DKK</Text>
+              </Text>
+            </>
+          );
+        })}
 
-      return (
-        <>
-          <Text style={styles.sessionText} key={index}>
-            You spent {hours}h {minutes}m's renting {product.productName}
-          </Text>
-          <Text style={styles.sessionprice}>
-            The total price for your rent = <Text style={styles.boldText}>{price},00 DKK</Text>
-          </Text>
-        </>
-      );
-    })}
-   <TouchableOpacity 
+<View> 
+<TouchableOpacity 
   style={styles.button1} 
   onPress={async () => {
-    await checkRentStatus();
-    deleteRentedProducts();
+    if (cards.length === 0) {
+      Alert.alert('Add Payment method first');
+    } else {
+      await checkRentStatus();
+      deleteRentedProducts();
+      Alert.alert('Your payment was successful');
+    }
   }}
 >
   <Text style={styles.buttonText1}>Return and Pay</Text>
 </TouchableOpacity>
-  </>
-)}
+
+  <View style={styles.button2}>
+  <TouchableOpacity 
+  onPress={() => {
+    if (cards.length === 0) {
+      navigation.navigate('PaymentScreen');
+    } else {
+      console.log('Card: Select button pressed');
+      setShowDropdown(true);
+    }
+  }}
+>
+  <Text style={{ fontSize: 18 }}>
+    {`Card: ${cards.length > 0 ? `${cards[0].cardType} ending in ${cards[0].cardNumber.slice(-4)}` : 'Please add payment method'}`}
+  </Text>
+</TouchableOpacity>
+  <Modal
+  animationType="slide"
+  transparent={true}
+  visible={showDropdown}
+  onRequestClose={() => setShowDropdown(false)}
+>
+  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    {cards.length > 0 ? (
+      <View style={{ borderColor: '#000000', borderWidth: 2, borderRadius: 40, padding: 10, backgroundColor: '#095167', width: '80%' }}>
+         <Text style={{ fontSize: 20, color: '#FCCE85', fontWeight: 'bold', marginBottom: 5, textAlign: 'center' }}>Choose a card</Text>
+        {cards.map((card) => (
+          <TouchableOpacity
+            key={card.id}
+            onPress={() => {
+              console.log('selected card:', card);
+              setSelectedCard(card);
+              console.log('selectedCard state variable:', selectedCard);
+              setShowDropdown(false);
+            }}
+            style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 5, width: '80%', alignItems: 'center', backgroundColor: '#095167', marginBottom: 2 }}
+          >
+            <Text style={{ fontSize: 15, color: '#FCCE85', fontWeight: 'bold' }}>{`${card.cardType} ending in ${card.cardNumber.slice(-4)}`}</Text>
+            <Image
+              source={
+                card.cardType === 'Visa'
+                  ? require('../assets/visa.png')
+                  : card.cardType === 'Mastercard'
+                  ? require('../assets/mastercard.png')
+                  : card.cardType === 'Dankort'
+                  ? require('../assets/dankort.png')
+                  : null
+              }
+              style={{ ...styles.cardImage, width: 50, height: 25, resizeMode: 'contain', marginLeft: '20%' }}
+            />
+          </TouchableOpacity>
+        ))}
+      </View>
+    ) : (
+      <TouchableOpacity onPress={() => {
+        if (!selectedCard) {
+          navigation.navigate('PaymentScreen');
+        }
+      }}>
+      </TouchableOpacity>
+  )}
+  </View>
+</Modal>
+</View>
+</View>
+      </>
+    )}
     {isSessionBoxExpanded && rentedProducts.map((product, index) => {
       const rentedAt = new Date(product.rentedAt.seconds * 1000);
       const now = new Date();
@@ -444,7 +552,7 @@ const styles = StyleSheet.create({
     color: '#FCCE85',
     padding: 10,
     marginLeft: 10, // Adjust this to align on the left side
-    marginVertical: 0,
+    marginVertical: 1,
   },
 
   sessionText: {
@@ -458,7 +566,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#FCCE85',
     padding: 10,
-    marginLeft: -40,
+    marginLeft: -35,
     marginVertical: -40,
   },
   
@@ -473,8 +581,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#FCCE85',
     padding: 10,
     borderRadius: 5,
-    marginTop: 120,
-    marginVertical: -180,
+    marginTop: 70,
+    marginVertical: -30,
+    fontWeight: 'bold',
+  },
+
+  button2: {
+    backgroundColor: '#FCCE85',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 60,
+    marginVertical: -70,
+    width: '150%',
+    marginBottom: -80,
+   
+    
   },
   
   buttonText: {
@@ -499,15 +620,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
 
-  titleStyle: {
-    fontSize: 20,
-    color: '#FCCE85',
-    fontWeight: 'bold',
-    textAlign: 'left',
-    marginLeft: -60,
-    marginVertical: -20,
-    marginTop: 30,
-  },
+ 
 });
 
 
