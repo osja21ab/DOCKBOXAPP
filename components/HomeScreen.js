@@ -7,7 +7,7 @@ import { requestForegroundPermissionsAsync, getCurrentPositionAsync, Accuracy } 
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, doc, onSnapshot, getDocs, deleteDoc, query, where, updateDoc } from 'firebase/firestore';
 import UserContext from './UserContext';
-import { app } from '../firebase/fireBase'
+import { app } from '../firebase/fireBase'// Path: components/HomeScreen.js
 import { Picker } from '@react-native-picker/picker';
 
 const HomeScreen = ({ navigation }) => {
