@@ -34,7 +34,7 @@ const RentScreen = ({ route, navigation }) => {
 
       Alert.alert('Product Rented', 'The product has been successfully rented.');
 
-      navigation.goBack();
+      navigation.navigate("HomeScreen");
     } catch (error) {
       console.error('Error renting product:', error);
     }
