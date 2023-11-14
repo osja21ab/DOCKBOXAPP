@@ -1,18 +1,100 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { getFirestore, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, setDoc, collection, doc, updateDoc, snapshot } from "firebase/firestore";
 import { auth, db } from '../firebase/fireBase'; // adjust the path to your fireBase.js file
-import { setDoc } from "firebase/firestore";
 import { getDoc } from "firebase/firestore";
 import { deleteUser } from 'firebase/auth';
 import { deleteDoc } from 'firebase/firestore';
-
+import * as ImagePicker from 'expo-image-picker';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 const ProfileScreen = ({ setIsLoggedIn }) => {
     const navigation = useNavigation();
     const [email, setEmail] = useState(''); // Add this line
+    const [images, setImages] = useState([]);
+    const [profileImage, setProfileImage] = useState(null);
+
+    const uploadImage = async (image) => {
+        const user = auth.currentUser;
+        const storage = getStorage();
+    
+        const storageRef = ref(storage, `profileImages/${user.uid}`);
+        const response = await fetch(image);
+        const blob = await response.blob();
+    
+        const uploadTask = uploadBytesResumable(storageRef, blob);
+    
+        uploadTask.on('state_changed', 
+    (snapshot) => {
+        // You can use this part to display the upload progress
+    }, 
+    (error) => {
+        console.log('Upload error:', error);
+    }, 
+    () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
+            console.log('Download URL:', downloadURL);
+            const userDoc = doc(db, "Users", user.email.toLowerCase());
+            await updateDoc(userDoc, { profileImage: downloadURL }, { merge: true });
+            setProfileImage(downloadURL);
+        }).catch((error) => {
+            console.log('Get download URL error:', error);
+        });
+    }
+);
+    };
+    
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.5,
+        });
+    
+        console.log(result);
+    
+        if (!result.cancelled) {
+            setImages([result.uri]);
+            uploadImage(result.uri);
+        }
+    };
+
+
+    const fetchProfileImage = async (user) => {
+        const userDoc = doc(db, "Users",user.email.toLowerCase());
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+            setProfileImage(docSnap.data().profileImage);
+        }
+    };
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                setEmail(user.email.toLowerCase());
+                fetchProfileImage(user);
+            } else {
+                setEmail('');
+                setProfileImage(null); // Reset the profile image when the user logs out
+            }
+        });
+    
+        return unsubscribe;
+    }, []);
+
+    useEffect(() => {
+        const user = auth.currentUser;
+        if (user) {
+            setEmail(user.email.toLowerCase());
+            fetchProfileImage(user); // Fetch the profile image when the user changes
+        } else {
+            setEmail('');
+        }
+    }, [setIsLoggedIn]);
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Your profile',
@@ -36,9 +118,20 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
     }, [navigation]);
 
     useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                fetchProfileImage(user);
+            }
+        });
+    
+        return unsubscribe;
+    }, []);
+
+    useEffect(() => {
         const user = auth.currentUser;
         if (user) {
             setEmail(user.email.toLowerCase());
+            fetchProfileImage(user); // Fetch the profile image when the user changes
         } else {
             setEmail('');
         }
@@ -90,9 +183,12 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.headerBox} />
-            <Image source={require('../assets/profil.png')} style={styles.profileImage} />
-            <Text style={styles.username}>{email}</Text>
+        <View style={styles.headerBox} />
+        <Image source={profileImage ? {uri: profileImage} : require('../assets/profil.png')} style={styles.profileImage} />
+        <Text style={styles.username}>{email}</Text>
+        <TouchableOpacity onPress={pickImage} style={{ marginTop: -20 }} >
+            <Text>Edit profile picture</Text>
+        </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChangePassword')}>
                 <Text style={styles.buttonText}>Change Password</Text>

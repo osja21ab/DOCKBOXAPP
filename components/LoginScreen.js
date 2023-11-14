@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TextInput, StyleSheet, Text, ImageBackground, TouchableOpacity, StatusBar } from 'react-native';
 import fireBase from '../firebase/fireBase';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, updateDoc } from 'firebase/firestore';
 
 class LoginScreen extends React.Component {
   constructor(props) {
@@ -28,11 +28,12 @@ class LoginScreen extends React.Component {
       const auth = getAuth(fireBase);
       await signInWithEmailAndPassword(auth, email, password);
       this.setState({ email: '', password: '', errorMessage: null });
-      this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
-  
+    
       // Add user to Firestore after successful login
       const db = getFirestore();
-      await setDoc(doc(db, "Users", email), { loggedIn: true });
+      await setDoc(doc(db, "Users", email), { loggedIn: true }, { merge: true });
+    
+      this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
     } catch (error) {
       this.setState({ errorMessage: 'Invalid email or password' });
     }
