@@ -1,150 +1,108 @@
-import React from 'react';
-import { StyleSheet, View, Image, Text } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import React, { useState, useEffect } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import getAuth and onAuthStateChanged from Firebase
+import UserContext from './components/UserContext'; // Import UserContext
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import LocationDetail from './Views/LocationDetailScreen.js';
-import { Feather } from '@expo/vector-icons';
-import Profile from './Views/profile.js'; 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import HomeScreen from './components/HomeScreen';
+import ProfileScreen from './components/ProfileScreen';
+import NyhavnScreen from './components/NyhavnScreen';
+import SignupScreen from './components/SignupScreen';
+import LoginScreen from './components/LoginScreen';
+import GetstartedScreen from './components/GetstartedScreen';
+import FAQScreen from './components/FAQScreen';
+import SlusenScreen from './components/SlusenScreen';
+import NordhavnScreen from './components/NordhavnScreen';
+import BryggenScreen from './components/BryggenScreen';
+import RentScreen from './components/RentScreen';
+import MyTrips from './components/MyTrips';
+import PaymentScreen from './components/PaymentScreen';
+import RecommendedTrips from './components/RecommendedScreen';
+import TermsScreen from './components/TermsScreen';
+import SubscriptionScreen from './components/SubscriptionScreen';
 
 
-const Stack = createStackNavigator();
+
+
+const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
+
+const MainNavigator = ({ setIsLoggedIn }) => (
+  <Stack.Navigator>
+    <Stack.Screen name="HomeScreen" component={HomeScreen} />
+    <Stack.Screen name="ProfileScreen">
+      {(props) => <ProfileScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+    </Stack.Screen>
+    <Stack.Screen name="BryggenScreen" component={BryggenScreen} />
+    <Stack.Screen name="SlusenScreen" component={SlusenScreen} />
+    <Stack.Screen name="NordhavnScreen" component={NordhavnScreen} />
+    <Stack.Screen name="NyhavnScreen" component={NyhavnScreen} />
+    <Stack.Screen name="RentScreen" component={RentScreen} />
+    <Stack.Screen name='MyTrips' component={MyTrips} />
+    <Stack.Screen name='PaymentScreen' component={PaymentScreen} />
+  </Stack.Navigator>
+);
+
+const AuthNavigator = ({ setIsLoggedIn }) => (
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Screen name="Login" options={{ title: 'Login' }}>
+      {(props) => <LoginScreen {...props} setIsLoggedIn={setIsLoggedIn} />}
+    </Stack.Screen>
+    <Stack.Screen name="SignupScreen" component={SignupScreen} />
+  </Stack.Navigator>
+);
 
 const App = () => {
-  const copenhagenCoordinates = {
-    latitude: 55.6616,
-    longitude: 12.5925,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  };
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [userId, setUserId] = useState(null);
+  const auth = getAuth(); // Initialize auth
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.email); // Set the user's email when they log in
+      } else {
+        setUserId(null); // Clear the user's email when they log out
+      }
+    });
+  
+    return () => unsubscribe();
+  }, []);
 
-  const dockBoxCoordinates = {
-    latitude: 55.667369,
-    longitude: 12.576421,
-  };
 
-  return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerStyle: {
-            height: 100,
-            backgroundColor: '#095167',
-          },
-          headerTitleAlign: 'center',
-          headerTintColor: '#FCCE85',
-          headerTitleStyle: {
-            fontSize: 20,
-          },
-        }}
-      >
-        <Stack.Screen
-          name="map"
-          component={MapScreen}
-          options={({ navigation }) => ({
-            title: '',
-            headerRight: () => (
-              <View style={styles.headerRight}>
-                <Text>
-                  <Feather
-                    name="user"
-                    size={30}
-                    color="#FCCE85"
-                    onPress={() => navigation.navigate('Profile')}
-                  />
-                </Text>
-              </View>
-            ),
-            headerLeft: () => (
-              <View style={styles.headerLeft}>
-                <Text>
-                  <Feather name="list" size={30} color="#FCCE85" />
-                </Text>
-              </View>
-            ),
-            headerTitle: () => (
-              <Image
-                source={require('./Views/your_logo.png')}
-                style={styles.headerLogo}
-              />
-            ),
-          })}
-          initialParams={{ coordinates: copenhagenCoordinates, dockBoxCoordinates }}
-        />
-        <Stack.Screen
-          name="LocationDetail"
-          component={LocationDetail}
-          options={({ route }) => ({
-            headerTitle: route.params.title || 'Location Detail',
-          })}
-        />
-        <Stack.Screen name="Profile" component={Profile} />
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-};
-
-const MapScreen = ({ route, navigation }) => {
-  const { coordinates, dockBoxCoordinates } = route.params;
 
   return (
-    <View style={styles.container}>
-      <MapView style={styles.map} initialRegion={coordinates}>
-        <Marker
-          coordinate={dockBoxCoordinates}
-          title="DockBox"
-          onPress={() =>
-            navigation.navigate('LocationDetail', {
-              title: 'DockBox',
-            })
-          }
-        >
-          <View style={styles.customMarker}>
-            <Image
-              source={require('./Views/your_logo.png')}
-              style={styles.markerImage}
-            />
-          </View>
-        </Marker>
-      </MapView>
-    </View>
+    <UserContext.Provider value={{ userId }}>
+      <NavigationContainer>
+        {isLoggedIn ? (
+         <Drawer.Navigator
+         screenOptions={{
+           headerShown: false,
+           drawerStyle: {
+             backgroundColor: '#095167', // Change background color of the drawer
+             width: 275, // Set width of the drawer
+             paddingTop: 20,
+           },
+           drawerLabelStyle: {
+             fontSize: 20, // Adjust font size of drawer labels
+             fontWeight: 'bold', // Make drawer labels bold
+             color: '#FCCE85', // Set color of drawer labels
+           },
+         }}
+       >
+            <Drawer.Screen name="Map">
+              {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
+            </Drawer.Screen>
+            <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="Recommended Trips" component={RecommendedTrips} options={{ headerShown: true }} />
+            <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: true }} />
+            <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
+          </Drawer.Navigator>
+        ) : (
+          <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
+        )}
+      </NavigationContainer>
+    </UserContext.Provider>
   );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  map: {
-    flex: 1,
-    width: '100%',
-  },
-  headerLogo: {
-    width: 120,
-    height: 50,
-    resizeMode: 'contain',
-  },
-  headerRight: {
-    paddingRight: 20,
-  },
-  headerLeft: {
-    paddingLeft: 20,
-  },
-  customMarker: {
-    backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  markerImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#2CD100',
-  },
-});
-
+ };
 export default App;

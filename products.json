@@ -3,24 +3,24 @@
       "id": "1111",
       "name": "Paddleboard 1",
       "description": "Green",
-      "image": "./paddle.png"
+      "image": "paddle.png"
     },
     {
       "id": "2222",
       "name": "Paddleboard 2",
       "description": "Red",
-      "image": "./paddle.png"
+      "image": "paddle.png"
     },
     {
       "id": "3333",
       "name": "Paddleboard 3",
       "description": "Black",
-      "image": "./paddle.png"
+      "image": "paddle.png"
     },
     {
       "id": "4444",
       "name": "Paddleboard 4",
       "description": "Navy blue",
-      "image": "./paddle.png"
+      "image": "paddle.png"
     }
   ]
