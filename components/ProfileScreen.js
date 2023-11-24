@@ -186,8 +186,8 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
         <View style={styles.headerBox} />
         <Image source={profileImage ? {uri: profileImage} : require('../assets/profil.png')} style={styles.profileImage} />
         <Text style={styles.username}>{email}</Text>
-        <TouchableOpacity onPress={pickImage} style={{ marginTop: -20 }} >
-            <Text>Edit profile picture</Text>
+        <TouchableOpacity onPress={pickImage}>
+        <Feather name="edit" style={styles.editbutton} />
         </TouchableOpacity>
 
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ChangePassword')}>
@@ -240,12 +240,12 @@ const styles = StyleSheet.create({
         width: 200,
         height: 200,
         borderRadius: 150,
-        marginBottom: 20,
+        marginBottom: 10,
         marginTop:50
     },
     username: {
         fontSize: 16,
-        marginBottom: 30,
+        marginBottom:10,
         color: 'grey',
     },
     button: {
@@ -286,6 +286,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center',
         fontWeight: 'bold',
+    },
+    editbutton: {
+        fontSize: 24,
+        color: 'black', // Adjust the color as needed
+        zIndex: 1,
+        bottom:245,
+        left: 80,
+        color: '#FCCE85',        
     },
     
 });

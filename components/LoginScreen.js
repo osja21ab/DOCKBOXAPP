@@ -50,6 +50,13 @@ class LoginScreen extends React.Component {
         style={[styles.background, { marginTop: -5 }]}
         resizeMode="cover"
       >
+        {/* New ImageBackground for Dockbox.png */}
+        <ImageBackground
+          source={require('../assets/Dockbox.png')}
+          style={styles.dockboxImage}
+          resizeMode="contain"
+        />
+      
         <StatusBar hidden />
         <View style={styles.container}>
           <Text style={styles.title}>Welcome To DockBox</Text>
@@ -110,6 +117,7 @@ const styles = StyleSheet.create({
     color: '#FCCE85',
     fontSize: 41,
     marginBottom: 30,
+    marginTop: 70,
     position: 'absolute',
     top: '20%',
     left: 10,
@@ -118,7 +126,7 @@ const styles = StyleSheet.create({
     width: '80%',
     alignItems: 'center',
     marginBottom: 20,
-    marginTop: 400,
+    marginTop: 200,
   },
   input: {
     fontSize: 16,
@@ -184,6 +192,18 @@ const styles = StyleSheet.create({
   orText: {
     paddingHorizontal: 10,
     color: '#FCCE85',
+  },
+  dockboxImage: {
+    position: 'absolute',
+    top: 70,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1, // Ensure the Dockbox image is on top of the background image
+    height: '35%',
+    width:'100%',
   },
 });
 
