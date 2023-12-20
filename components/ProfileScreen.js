@@ -10,6 +10,7 @@ import { deleteDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
+//initialise ProfileScreen
 const ProfileScreen = ({ setIsLoggedIn }) => {
     const navigation = useNavigation();
     const [email, setEmail] = useState(''); // Add this line
@@ -19,7 +20,7 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
     const uploadImage = async (image) => {
         const user = auth.currentUser;
         const storage = getStorage();
-    
+    //fetch user profile picture
         const storageRef = ref(storage, `profileImages/${user.uid}`);
         const response = await fetch(image);
         const blob = await response.blob();
@@ -28,11 +29,10 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
     
         uploadTask.on('state_changed', 
     (snapshot) => {
-        // You can use this part to display the upload progress
     }, 
     (error) => {
         console.log('Upload error:', error);
-    }, 
+    }, //show user profile pic on screen
     () => {
         getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
             console.log('Download URL:', downloadURL);
@@ -45,7 +45,7 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
     }
 );
     };
-    
+    //image picker for choosing profile picture
     const pickImage = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -54,15 +54,12 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
             quality: 0.5,
         });
     
-        console.log(result);
-    
         if (!result.cancelled) {
             setImages([result.uri]);
             uploadImage(result.uri);
         }
     };
-
-
+//set profile image in firestore
     const fetchProfileImage = async (user) => {
         const userDoc = doc(db, "Users",user.email.toLowerCase());
         const docSnap = await getDoc(userDoc);
@@ -78,7 +75,7 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
                 fetchProfileImage(user);
             } else {
                 setEmail('');
-                setProfileImage(null); // Reset the profile image when the user logs out
+                setProfileImage(null); // Reset the profile image when the user logs out = no user is logged in
             }
         });
     
@@ -95,6 +92,7 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
         }
     }, [setIsLoggedIn]);
 
+//header options and styling
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title: 'Your profile',
@@ -155,11 +153,9 @@ const ProfileScreen = ({ setIsLoggedIn }) => {
     
             // Set isLoggedIn state to false
             setIsLoggedIn(false);
-    
-            // Add any additional logout logic here
         }
     };
-
+//delete account function
     const handleDeleteAccount = async () => {
         const user = auth.currentUser;
         if (user) {

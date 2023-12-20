@@ -4,6 +4,7 @@ import { getFirestore, collection, doc, addDoc, getDocs, deleteDoc } from 'fireb
 import { app, auth } from '../firebase/fireBase';
 import { Feather } from '@expo/vector-icons';
 
+//initialise Card screen 
 const PaymentScreen = ({ navigation }) => {
   const [cardNumber, setCardNumber] = useState('');
   const [expiry, setExpiry] = useState('');
@@ -12,11 +13,11 @@ const PaymentScreen = ({ navigation }) => {
   const [cards, setCards] = useState([]);
   const [showCardTypePicker, setShowCardTypePicker] = useState(false);
 
+//fetch users already created cards from firestore
   const getCards = async () => {
     try {
       const db = getFirestore(app);
       const user = auth.currentUser;
-
       if (user) {
         const userEmail = user.email.toLowerCase();
         const userDocRef = doc(db, 'Users', userEmail);
@@ -38,7 +39,7 @@ const PaymentScreen = ({ navigation }) => {
   useEffect(() => {
     getCards();
   }, []);
-
+//function to add card data to firestore and show in app
   const addCardToFirestore = async () => {
     try {
       const db = getFirestore(app);
@@ -71,7 +72,7 @@ const PaymentScreen = ({ navigation }) => {
       console.error('Error:', error);
     }
   };
-
+//Delete card form firestore and app
   const deleteCard = async (cardId) => {
     try {
       const db = getFirestore(app);
@@ -93,7 +94,7 @@ const PaymentScreen = ({ navigation }) => {
       console.error('Error:', error);
     }
   };
-
+//Header details
   useEffect(() => {
     navigation.setOptions({
       title: 'Add Payment Method',

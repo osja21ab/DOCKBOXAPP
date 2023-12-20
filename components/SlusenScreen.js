@@ -5,23 +5,24 @@ import { useNavigation } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import { collection, getDocs } from 'firebase/firestore';
 import { getFirestore } from 'firebase/firestore';
-import { app } from '../firebase/fireBase';
+import { app } from '../firebase/fireBase'; // Import Firebase app instance
 import { useRoute } from '@react-navigation/native';
 
-const db = getFirestore(app);
+const db = getFirestore(app); // Initialize Firestore database
 
 const SlusenScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const distance = route.params?.distance || 'N/A';
-
+  const distance = route.params?.distance || 'N/A'; // Get distance from route parameters
+// State variables to manage product data, camera permission, and camera visibility
   const [products, setProducts] = useState([]);
   const [hasPermission, setHasPermission] = useState(null);
   const [isCameraVisible, setCameraVisible] = useState(false);
-
+  
+  // Header configurations including title, icons, and styles
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: `Nyhavn (Distance: ${distance} km)`,
+      headerTitle: `Nyhavn (Distance: ${distance} km)`, //change header depedending on distance
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={30} color="#FCCE85" style={styles.headerLeftIcon} />
@@ -38,12 +39,12 @@ const SlusenScreen = () => {
       headerTintColor: '#FCCE85',
     });
   }, [navigation]);
-
+// Fetch products and ask for camera permission on component start
   useEffect(() => {
     fetchProducts();
     askCameraPermission();
   }, []);
-
+// Function to fetch products from Firestore
   const fetchProducts = async () => {
     const productsCollection = collection(db, 'Sluseholmen');
     const productsData = [];
@@ -52,11 +53,10 @@ const SlusenScreen = () => {
       const querySnapshot = await getDocs(productsCollection);
       querySnapshot.forEach((doc) => {
         const productData = doc.data();
-        if (productData.RentStatus !== 2) { // Exclude products with RentStatus 2
+        if (productData.RentStatus !== 2) { // Exclude products with RentStatus 2(rented)
           productsData.push({
             id: doc.id,
             productName: productData.productName,
-            // ... add other fields you need
           });
         }
       });
@@ -66,16 +66,16 @@ const SlusenScreen = () => {
       console.error('Error fetching data from Firestore:', error);
     }
   };
-
+// Function to request camera permission using Expo's Camera API
   const askCameraPermission = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
     setHasPermission(status === 'granted');
   };
-
+// when product is pressed activate the camera for barcode scanning
   const handleProductPress = () => {
     setCameraVisible(true);
   };
-
+// Handle barcode data from the camera and find matching product with that ID
   const handleBarcodeRead = async (event) => {
     const scannedData = event.data;
     console.log('Scanned Data:', scannedData);
@@ -91,11 +91,11 @@ const SlusenScreen = () => {
 
     setCameraVisible(false);
   };
-
+//support phone function
   const callPhoneNumber = () => {
     Linking.openURL('tel:+4526716980');
   };
-
+  //product pictures
   const getImageSource = (productName) => {
     if (productName && productName.length > 5) {
       return require('../assets/Kajak.png');
@@ -107,7 +107,7 @@ const SlusenScreen = () => {
   const handleRefresh = () => {
     fetchProducts();
   };
-
+//UI
   return (
     <View style={styles.container}>
       {isCameraVisible && hasPermission && (

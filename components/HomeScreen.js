@@ -9,9 +9,11 @@ import { getFirestore, collection, doc, onSnapshot, getDocs, deleteDoc, query, w
 import UserContext from './UserContext';
 import { app } from '../firebase/fireBase'// Path: components/HomeScreen.js
 import { Picker } from '@react-native-picker/picker';
-
+// Initialize HomeScreen 
 const HomeScreen = ({ navigation }) => {
+  // Accessing userId from UserContext
   const { userId } = useContext(UserContext);
+  // Initial coordinates for Map
   const copenhagenCoordinates = {
     latitude: 55.6616,
     longitude: 12.5925,
@@ -19,6 +21,7 @@ const HomeScreen = ({ navigation }) => {
     longitudeDelta: 0.0421,
   };
 
+  // State variables declarations
   const [userLocation, setUserLocation] = useState(null);
   const [mapRegion, setMapRegion] = useState(copenhagenCoordinates);
   const [hasRentedProducts, setHasRentedProducts] = useState(false);
@@ -31,31 +34,35 @@ const HomeScreen = ({ navigation }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [cards, setCards] = useState([]);
 
+  // Fetching user rented products and user
   useEffect(() => {
+  // Function to fetch user data from Firestore  
     const fetchUserData = () => {
       const db = getFirestore();
       const userRef = doc(db, 'Users', userId.toLowerCase());
 
-      const unsubscribe = onSnapshot(collection(userRef, 'rentedProducts'), (snapshot) => {
+      const unsubscribe = onSnapshot(collection(userRef, 'rentedProducts'), (snapshot) => { // Firestore reference setup and subscription to rentedProducts collection
         const products = snapshot.docs.map((doc) => doc.data());
-        setRentedProducts(products);
+        setRentedProducts(products); //delcare products
       });
 
-      return unsubscribe;
+      return unsubscribe; // Cleanup on completion
     };
 
     const unsubscribe = fetchUserData();
     return () => unsubscribe();
   }, [userId]);
 
+  // Fetching user payment cards on component focus
   useFocusEffect(
     React.useCallback(() => {
+      // Async function to get payment cards for the user
       const getCards = async () => {
         try {
           const db = getFirestore(app);
           const auth = getAuth();
           const user = auth.currentUser;
-    
+    //checking DB for match and getting cards
           if (user) {
             const userEmail = user.email.toLowerCase();
             const userDocRef = doc(db, 'Users', userEmail);
@@ -63,21 +70,19 @@ const HomeScreen = ({ navigation }) => {
             const querySnapshot = await getDocs(paymentMethodCollectionRef);
             const userCards = [];
             querySnapshot.forEach((doc) => {
-              userCards.push({ id: doc.id, ...doc.data() });
+              userCards.push({ id: doc.id, ...doc.data() }); 
             });
-            setCards(userCards);
+            setCards(userCards); // Update state with the fetched cards
           } else {
-            console.log('No user logged in.');
           }
         } catch (error) {
           console.error('Error:', error);
         }
       };
-    
       getCards();
     }, [])
   );
-
+  // Updating endTime when the session box is collapsed
   useEffect(() => {
     console.log('selectedCard state variable:', selectedCard);
   }, [selectedCard]);
@@ -87,13 +92,14 @@ const HomeScreen = ({ navigation }) => {
       setEndTime(new Date());
     }
   }, [isSessionBoxExpanded]);
-
+ // Updating hasRentedProducts based on rentedProducts
   useEffect(() => {
     setHasRentedProducts(rentedProducts.length > 0);
   }, [rentedProducts]);
-
+// Function to delete rented products from Firestore
   const deleteRentedProducts = async () => {
     try {
+      // Try to delete rented products documents from Firestore
       const auth = getAuth();
       const email = auth.currentUser.email.toLowerCase();
       const rentedProductsRef = collection(getFirestore(), 'Users', email, 'rentedProducts');
@@ -102,19 +108,17 @@ const HomeScreen = ({ navigation }) => {
       querySnapshot.forEach((doc) => {
         deleteDoc(doc.ref);
       });
-
-      console.log('Rented products deleted successfully');
     } catch (error) {
       console.error('Error deleting rented products:', error);
     }
   };
 
  
-
+// Checking rent status and updating Firestore accordingly
   const checkRentStatus = async () => {
     const locations = ['bryggen', 'Nordhavn', 'Nyhavn', 'Sluseholmen'];
     const db = getFirestore(app);
-  
+  // Looping through different locations and update RentStatus
     for (const location of locations) {
       const q = query(collection(db, location), where("RentStatus", "==", 2));
       const querySnapshot = await getDocs(q);
@@ -130,7 +134,7 @@ const HomeScreen = ({ navigation }) => {
   
  
   
-
+// Coordinates for different dock boxes
   const dockBoxCoordinates = {
     latitude: 55.667369,
     longitude: 12.576421,
@@ -150,12 +154,13 @@ const HomeScreen = ({ navigation }) => {
     latitude: 55.706804,
     longitude: 12.598841,
   };
-
+// Function to calculate distance between User and box
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     if (lat1 && lon1 && lat2 && lon2) {
       const R = 6371; // Radius of the Earth in kilometers
       const dLat = (lat2 - lat1) * (Math.PI / 180);
       const dLon = (lon2 - lon1) * (Math.PI / 180);
+      // Calculation logic for distance between two coordinates
       const a =
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
         Math.cos(lat1 * (Math.PI / 180)) *
@@ -165,13 +170,14 @@ const HomeScreen = ({ navigation }) => {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       const distance = R * c;
 
-      return distance.toFixed(2); // Round to two decimal places
+      return distance.toFixed(2);
     } else {
-      return 'N/A';
+      return 'N/A'; //if no gps permission 
     }
   };
-
+// Setting navigation options using useLayoutEffect
   useLayoutEffect(() => {
+     // Setting differing navigation header styles, icons, and titles
     navigation.setOptions({
       headerStyle: {
         height: 80,
@@ -203,17 +209,17 @@ const HomeScreen = ({ navigation }) => {
       ),
     });
   }, [navigation]);
-
+// Checking and requesting location permissions
   useEffect(() => {
     checkAndRequestLocationPermission();
   }, []);
-
+// Function to handle location permission request
   const checkAndRequestLocationPermission = async () => {
     const { status } = await requestForegroundPermissionsAsync();
-
+// Check for location permission status and request if needed
     if (status !== 'granted') {
       Alert.alert(
-        'Location Permission Required',
+        'Location Permission Required', //grant permission to continue
         'You need to grant location permission to use this feature.',
         [{ text: 'OK', style: 'default' }]
       );
@@ -221,8 +227,9 @@ const HomeScreen = ({ navigation }) => {
       getUserLocation();
     }
   };
-
+  // Handler for 'Return' button press
   const onReturnPress = () => {
+    // Collapse session box with animation and log 'Return product'
     Animated.timing(sessionBoxHeight, {
       toValue: 0.5,
       duration: 500,
@@ -231,8 +238,9 @@ const HomeScreen = ({ navigation }) => {
     setIsSessionBoxExpanded(false);
     console.log('Return product')
   };
-
+//finding user location for distance measure
   const getUserLocation = async () => {
+    // Try to get user location and update state with coordinates
     try {
       const location = await getCurrentPositionAsync({ accuracy: Accuracy.High });
       setUserLocation(location.coords);
@@ -247,14 +255,16 @@ const HomeScreen = ({ navigation }) => {
       console.error('Error getting user location:', error);
     }
   };
+    // Update currentTime state every second
   useEffect(() => {
-    const timer = setInterval(() => {
+    const timer = setInterval(() => { // Timer to update currentTime state every second
       setCurrentTime(new Date());
     }, 1000);
 
     return () => clearInterval(timer); // Clean up on unmount
   }, []);
 
+   // Function to handle session box expansion on map press
   const onMapPress = () => {
     Animated.timing(sessionBoxHeight, {
       toValue: 0.15,
@@ -262,11 +272,13 @@ const HomeScreen = ({ navigation }) => {
       useNativeDriver: false,
     }).start(() => {
       setTimeout(() => {
-        setIsSessionBoxExpanded(true);
+        setIsSessionBoxExpanded(true); // Expanding and contracting the session box
       }, 10);
     });
   };
+  // Rendering the UI components...
   return (
+    // UI components and JSX elements...
     <View style={styles.container}>
       <MapView
         style={styles.map}
@@ -287,7 +299,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
           </Marker>
         )}
-
+{/*Cordinates and names for all boxes on map with logo*/}
         <Marker
           coordinate={dockBoxCoordinates}
           title= "DockBox Islands brygge"
@@ -363,7 +375,7 @@ const HomeScreen = ({ navigation }) => {
         </Marker>
       </MapView>
 
-
+{/*View if there is currently being rented a product*/}
       {hasRentedProducts && (
   <Animated.View style={[styles.sessionBox, { height: sessionBoxHeight.interpolate({ inputRange: [0, 1], outputRange: ['15%', '90%'] }) }]}>
     <Animated.Text style={[styles.sessionHeader, { marginTop: sessionBoxHeight.interpolate({ inputRange: [0.15, 0.5], outputRange: ['0%', '-35%'] }) }]}>
@@ -397,6 +409,7 @@ const HomeScreen = ({ navigation }) => {
 <TouchableOpacity 
   style={styles.button1} 
   onPress={async () => {
+    //check if any cards are available
     if (cards.length === 0) {
       Alert.alert('Add Payment method first');
     } else {
@@ -408,8 +421,8 @@ const HomeScreen = ({ navigation }) => {
 >
   <Text style={styles.buttonText1}>Return and Pay</Text>
 </TouchableOpacity>
-
-  <View style={styles.button2}>
+{/* select card for payment*/ }
+  <View style={styles.button2}> 
   <TouchableOpacity 
   onPress={() => {
     if (cards.length === 0) {
@@ -477,6 +490,7 @@ const HomeScreen = ({ navigation }) => {
     )}
     {isSessionBoxExpanded && rentedProducts.map((product, index) => {
       const rentedAt = new Date(product.rentedAt.seconds * 1000);
+      //change view if user is currently renting to show session data
       const now = new Date();
       const diff = Math.abs(currentTime - rentedAt);
       const hours = Math.floor(diff / 3600000);

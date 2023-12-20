@@ -13,15 +13,14 @@ class SignupScreen extends Component {
       email: '',
       password: '',
       confirmPassword: '',
-      /* stripeID */
       errorMessage: null,
       fontsLoaded: false,
     };
   }
 
   async componentDidMount() {
-    await this.loadFonts();
-    this.setState({ fontsLoaded: true });
+    await this.loadFonts(); // Load necessary fonts 
+    this.setState({ fontsLoaded: true }); // Set fontsLoaded to true when fonts are loaded
   }
 
   loadFonts = async () => {
@@ -30,25 +29,25 @@ class SignupScreen extends Component {
       FontAwesome: require('@expo/vector-icons/build/vendor/react-native-vector-icons/Fonts/FontAwesome.ttf'), // Load FontAwesome
     });
   };
-
+// Function to handle user sign-u
   handleSignUp = async () => {
     const { email, password, confirmPassword } = this.state;
-  
+  // Validation checks for required fields, password match, and password length
     if (!email || !password || !confirmPassword) {
       this.setState({ errorMessage: 'All fields are required' });
       return;
     }
-  
+  //check password match
     if (password !== confirmPassword) {
       this.setState({ errorMessage: 'Passwords do not match' });
       return;
     }
-  
+  //check lenght
     if (password.length < 6) {
       this.setState({ errorMessage: 'Password should be at least 6 characters long' });
       return;
     }
-  
+  //if everything is correct send to login screen
     try {
       const auth = getAuth(fireBase);
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -64,7 +63,7 @@ class SignupScreen extends Component {
       this.setState({ errorMessage: error.message });
     }
   };
-
+// Render a loading screen until fonts are loaded
   render() {
     if (!this.state.fontsLoaded) {
       return (
@@ -73,7 +72,7 @@ class SignupScreen extends Component {
         </View>
       );
     }
-
+//view
     return (
       <ImageBackground
         source={require('../assets/baggrund.png')}
@@ -137,7 +136,7 @@ class SignupScreen extends Component {
     );
   }
 }
-
+//styles
 const styles = StyleSheet.create({
   background: {
     flex: 1,

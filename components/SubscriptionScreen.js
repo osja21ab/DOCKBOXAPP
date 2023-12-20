@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
+//mockup screen no functionality in buttons etc.
 
 const SubscriptionScreen = ({ navigation }) => {
   React.useLayoutEffect(() => {
@@ -25,21 +26,15 @@ const SubscriptionScreen = ({ navigation }) => {
   }, [navigation]);
 
   const handleBuyPackages = () => {
-    // Action when Buy Packages box is pressed
-    // For example, navigate to Buy Packages screen
-    // navigation.navigate('BuyPackages');
+
   };
 
   const handleSubscription = () => {
-    // Action when Subscription box is pressed
-    // For example, navigate to Subscription screen
-    // navigation.navigate('Subscription');
+ ;
   };
 
   const handleAddPromoCode = () => {
-    // Action when Add Promo Code box is pressed
-    // For example, navigate to Add Promo Code screen
-    // navigation.navigate('AddPromoCode');
+
   };
 
   return (

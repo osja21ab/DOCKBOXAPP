@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, View, Text, Image, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
-
+//mockup screen all data is hard coded and displayed in the app no real functionality
 const RecommendedTrips = ({ navigation }) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,6 +24,7 @@ const RecommendedTrips = ({ navigation }) => {
     });
   }, [navigation]);
 
+  //reccomended trips as objects hardcoded in app
   const trips = [
     {
         name: 'The Beautiful Opera House',

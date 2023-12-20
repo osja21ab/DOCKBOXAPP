@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground }
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 
+//initialise screen FAQ Questions and answers
 const FAQScreen = ({ navigation }) => {
   const [faqData, setFaqData] = useState([
     {
@@ -47,12 +48,13 @@ const FAQScreen = ({ navigation }) => {
     },
   ]);
 
+  //onclick functionality, show answers upon clicking question
   const toggleAnswer = (index) => {
     const updatedFaq = [...faqData];
     updatedFaq[index].isOpen = !updatedFaq[index].isOpen;
     setFaqData(updatedFaq);
   };
-
+//header deatails
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: 'FAQ',
@@ -73,12 +75,13 @@ const FAQScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  //UI
   return (
     <ImageBackground source={require('../assets/questionmark.png')} style={styles.background}>
       <ScrollView contentContainerStyle={styles.container}>
         {faqData.map((faq, index) => (
           <View key={index} style={styles.faqItem}>
-            <TouchableOpacity onPress={() => toggleAnswer(index)} style={styles.questionContainer}>
+            <TouchableOpacity onPress={() => toggleAnswer(index)} style={styles.questionContainer} View>
               <Text style={styles.question}>{faq.question}</Text>
               <Feather
                 name={faq.isOpen ? 'chevron-up' : 'chevron-down'}
@@ -95,6 +98,7 @@ const FAQScreen = ({ navigation }) => {
   );
 };
 
+//styling
 const styles = StyleSheet.create({
   background: {
     flex: 1,

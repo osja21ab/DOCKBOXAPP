@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 
+//initialise screen and header details
 const GetstartedScreen = ({ navigation }) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,6 +25,7 @@ const GetstartedScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  //show getting started steps and, assests related to each step
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.stepsContainer}>
@@ -47,6 +49,7 @@ const renderStep = (stepText, image) => {
   );
 };
 
+//styles
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,

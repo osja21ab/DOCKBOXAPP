@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, TextInput, StyleSheet, Text, ImageBackground, TouchableOpacity, StatusBar } from 'react-native';
 import fireBase from '../firebase/fireBase';
+// Import necessary Firebase authentication and firestore methods
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getFirestore, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, updateDoc } from 'firebase/firestore'; // Import Firebase configuration
 
+//Login screen initialisation
 class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -13,6 +15,7 @@ class LoginScreen extends React.Component {
       errorMessage: '',
     };
   }
+  // Function to handle user login
   handleLogin = async () => {
     let { email, password } = this.state;
   
@@ -35,12 +38,12 @@ class LoginScreen extends React.Component {
     
       this.props.setIsLoggedIn(true); // Set the isLoggedIn state to true
     } catch (error) {
-      this.setState({ errorMessage: 'Invalid email or password' });
+      this.setState({ errorMessage: 'Invalid email or password' }); // Handle login error
     }
   }
-
+  // Function to navigate to the Signup screen
   handleSignUp = () => {
-    this.props.navigation.navigate('SignupScreen'); // Ensure 'Signup' matches the correct name in the navigator
+    this.props.navigation.navigate('SignupScreen');
   }
 
   render() {
@@ -207,4 +210,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default LoginScreen; // Export the LoginScreen component

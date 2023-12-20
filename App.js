@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import getAuth and onAuthStateChanged from Firebase
 import UserContext from './components/UserContext'; // Import UserContext
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+// Import all the necessary screen
 import HomeScreen from './components/HomeScreen';
 import ProfileScreen from './components/ProfileScreen';
 import NyhavnScreen from './components/NyhavnScreen';
@@ -23,10 +25,11 @@ import SubscriptionScreen from './components/SubscriptionScreen';
 
 
 
-
+//initialize navigation
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
+// Navigator for authenticated users
 const MainNavigator = ({ setIsLoggedIn }) => (
   <Stack.Navigator>
     <Stack.Screen name="HomeScreen" component={HomeScreen} />
@@ -43,6 +46,7 @@ const MainNavigator = ({ setIsLoggedIn }) => (
   </Stack.Navigator>
 );
 
+// Navigator for non-authenticated users
 const AuthNavigator = ({ setIsLoggedIn }) => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Login" options={{ title: 'Login' }}>
@@ -57,6 +61,7 @@ const App = () => {
   const [userId, setUserId] = useState(null);
   const auth = getAuth(); // Initialize auth
   useEffect(() => {
+        // Listen for changes in authentication state
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.email); // Set the user's email when they log in
@@ -65,7 +70,7 @@ const App = () => {
       }
     });
   
-    return () => unsubscribe();
+    return () => unsubscribe(); // Unsubscribe from the listener when component unmounts
   }, []);
 
 
@@ -88,7 +93,7 @@ const App = () => {
              color: '#FCCE85', // Set color of drawer labels
            },
          }}
-       >
+       >    {/* Define screens for the DrawerNavigator */}
             <Drawer.Screen name="Map">
               {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
             </Drawer.Screen>
@@ -99,6 +104,7 @@ const App = () => {
             <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
           </Drawer.Navigator>
         ) : (
+           // If the user is not logged in, show the AuthNavigator
           <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
         )}
       </NavigationContainer>

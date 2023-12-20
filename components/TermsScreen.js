@@ -3,6 +3,7 @@ import { View, ScrollView, Text, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 
+//mockup screen, how terms and conditions on screen
 const TermsScreen = ({ navigation }) => {
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,7 +34,8 @@ const TermsScreen = ({ navigation }) => {
       return <Text key={index}>{part}</Text>;
     });
   };
-
+  
+//terms and conditions
   const termsAndConditionsText = `
   Welcome to our Paddleboard Rental Service. These Terms and Conditions outline the rules and regulations for the use of our mobile application.
 
@@ -75,7 +77,7 @@ const TermsScreen = ({ navigation }) => {
 
     By using this application, you agree to the terms and conditions laid out by the Company. Please contact us for any queries or clarification.
     `;
-
+//UI
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -86,6 +88,7 @@ const TermsScreen = ({ navigation }) => {
   );
 };
 
+//styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
