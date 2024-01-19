@@ -9,7 +9,7 @@ import { app } from '../firebase/fireBase'; // Import Firebase app instance
 import { useRoute } from '@react-navigation/native';
 
 const db = getFirestore(app); // Initialize Firestore database
-faagahsdfhfhftgdhfg
+
 const BryggenScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();

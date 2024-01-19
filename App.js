@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth'; // Import getAuth and onAuthStateChanged from Firebase
 import UserContext from './components/UserContext'; // Import UserContext
@@ -80,29 +79,29 @@ const App = () => {
       <NavigationContainer>
         {isLoggedIn ? (
          <Drawer.Navigator
-         screenOptions={{
-           headerShown: false,
-           drawerStyle: {
-             backgroundColor: '#095167', // Change background color of the drawer
-             width: 275, // Set width of the drawer
-             paddingTop: 20,
-           },
-           drawerLabelStyle: {
-             fontSize: 20, // Adjust font size of drawer labels
-             fontWeight: 'bold', // Make drawer labels bold
-             color: '#FCCE85', // Set color of drawer labels
-           },
-         }}
-       >    {/* Define screens for the DrawerNavigator */}
-            <Drawer.Screen name="Map">
-              {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
-            </Drawer.Screen>
-            <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
-            <Drawer.Screen name="Recommended Trips" component={RecommendedTrips} options={{ headerShown: true }} />
-            <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
-            <Drawer.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: true }} />
-            <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
-          </Drawer.Navigator>
+  screenOptions={{
+    headerShown: false,
+    drawerStyle: {
+      backgroundColor: '#095167', // Change background color of the drawer
+      width: 275, // Set width of the drawer
+      paddingTop: 20,
+    },
+    drawerLabelStyle: {
+      fontSize: 20, // Adjust font size of drawer labels
+      fontWeight: 'bold', // Make drawer labels bold
+      color: '#FCCE85', // Set color of drawer labels
+    },
+  }}
+>
+  <Drawer.Screen name="Map">
+    {(props) => <MainNavigator {...props} setIsLoggedIn={setIsLoggedIn} />}
+  </Drawer.Screen>
+  <Drawer.Screen name="Get started" component={GetstartedScreen} options={{ headerShown: true }} />
+  <Drawer.Screen name="Recommended Trips" component={RecommendedTrips} options={{ headerShown: true }} />
+  <Drawer.Screen name="FAQ" component={FAQScreen} options={{ headerShown: true }} />
+  <Drawer.Screen name="Subscription" component={SubscriptionScreen} options={{ headerShown: true }} />
+  <Drawer.Screen name="Terms and Conditions" component={TermsScreen} options={{ headerShown: true }} />
+</Drawer.Navigator>
         ) : (
            // If the user is not logged in, show the AuthNavigator
           <AuthNavigator setIsLoggedIn={setIsLoggedIn} />
